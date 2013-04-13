@@ -1,4 +1,4 @@
-package com.ListBoost.BoostListView;
+package com.kemallette.ListBoost.List;
 
 
 import android.content.Context;

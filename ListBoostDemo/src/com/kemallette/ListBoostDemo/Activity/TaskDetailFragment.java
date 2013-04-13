@@ -1,4 +1,4 @@
-package com.ListBoost.listboostdemo;
+package com.kemallette.ListBoostDemo.Activity;
 
 
 import android.os.Bundle;
@@ -8,10 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ListBoost.listboostdemo.dummy.DummyContent;
+import com.kemallette.ListBoostDemo.R;
+import com.kemallette.ListBoostDemo.Task.Tasks;
 
 /**
- * A fragment representing a single Task detail screen. This fragment is either
+ * A fragment representing a single Tasks detail screen. This fragment is either
  * contained in a {@link TaskListActivity} in two-pane mode (on tablets) or a
  * {@link TaskDetailActivity} on handsets.
  */
@@ -22,12 +23,12 @@ public class TaskDetailFragment	extends
 	 * The fragment argument representing the item ID that this fragment
 	 * represents.
 	 */
-	public static final String		ARG_ITEM_ID	= "item_id";
+	public static final String	ARG_ITEM_ID	= "item_id";
 
 	/**
 	 * The dummy content this fragment is presenting.
 	 */
-	private DummyContent.DummyItem	mItem;
+	private Tasks.Task			mTask;
 
 
 	/**
@@ -44,12 +45,12 @@ public class TaskDetailFragment	extends
 
 		super.onCreate(savedInstanceState);
 
-		if (getArguments().containsKey(ARG_ITEM_ID)){
+		if (getArguments().containsKey(ARG_ITEM_ID))
 			// Load the dummy content specified by the fragment
 			// arguments. In a real-world scenario, use a Loader
 			// to load content from a content provider.
-			mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-		}
+
+			mTask = Tasks.TASK_MAP.get(getArguments().getString(ARG_ITEM_ID));
 	}
 
 
@@ -62,9 +63,8 @@ public class TaskDetailFragment	extends
 											false);
 
 		// Show the dummy content as text in a TextView.
-		if (mItem != null){
-			((TextView) rootView.findViewById(R.id.task_detail)).setText(mItem.content);
-		}
+		if (mTask != null)
+			((TextView) rootView.findViewById(R.id.task_detail)).setText(mTask.content);
 
 		return rootView;
 	}

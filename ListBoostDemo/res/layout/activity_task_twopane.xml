@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/task_list"
-        android:name="com.ListBoost.listboostdemo.TaskListFragment"
+        android:name="com.kemallette.ListBoostDemo.Activity.TaskListFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

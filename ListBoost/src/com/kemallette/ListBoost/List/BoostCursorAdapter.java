@@ -1,4 +1,4 @@
-package com.ListBoost.BoostListView;
+package com.kemallette.ListBoost.List;
 
 
 import android.content.Context;
@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import com.ListBoost.BoostListView.BoostListView.OnActionClickListener;
+import com.kemallette.ListBoost.List.BoostListView.OnActionClickListener;
 
 
 public class BoostCursorAdapter extends AbstractBoostCursorAdapter{

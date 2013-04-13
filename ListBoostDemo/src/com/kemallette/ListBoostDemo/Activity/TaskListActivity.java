@@ -1,9 +1,11 @@
-package com.ListBoost.listboostdemo;
+package com.kemallette.ListBoostDemo.Activity;
 
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+
+import com.kemallette.ListBoostDemo.R;
 
 
 /**
@@ -53,7 +55,6 @@ public class TaskListActivity	extends
 																								.setActivateOnItemClick(true);
 		}
 
-		// TODO: If exposing deep links into your app, handle intents here.
 	}
 
 
@@ -62,14 +63,14 @@ public class TaskListActivity	extends
 	 * the item with the given ID was selected.
 	 */
 	@Override
-	public void onItemSelected(String id){
+	public void onItemSelected(int id){
 
 		if (mTwoPane){
 			// In two-pane mode, show the detail view in this activity by
 			// adding or replacing the detail fragment using a
 			// fragment transaction.
 			Bundle arguments = new Bundle();
-			arguments.putString(TaskDetailFragment.ARG_ITEM_ID,
+			arguments.putInt(	TaskDetailFragment.ARG_ITEM_ID,
 								id);
 			TaskDetailFragment fragment = new TaskDetailFragment();
 			fragment.setArguments(arguments);

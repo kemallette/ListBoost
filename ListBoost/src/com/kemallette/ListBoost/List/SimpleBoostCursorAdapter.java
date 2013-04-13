@@ -1,11 +1,11 @@
-package com.ListBoost.BoostListView;
+package com.kemallette.ListBoost.List;
 
 
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
 
-import com.ListBoost.BoostListView.BoostListView.OnActionClickListener;
+import com.kemallette.ListBoost.List.BoostListView.OnActionClickListener;
 
 
 public class SimpleBoostCursorAdapter extends BoostCursorAdapter{

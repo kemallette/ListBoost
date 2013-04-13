@@ -1,4 +1,4 @@
-package com.ListBoost.BoostExpandableListView;
+package com.kemallette.ListBoost.ExpandableList;
 
 
 import android.widget.ExpandableListAdapter;

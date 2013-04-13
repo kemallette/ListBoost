@@ -1,25 +1,27 @@
-package com.ListBoost.BoostListView;
+package com.kemallette.ListBoost.List;
 
 
 import java.util.BitSet;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.widget.CursorAdapter;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.WrapperListAdapter;
 
-import com.ListBoost.Util.ExpandCollapseAnimation;
+import com.kemallette.ListBoost.Util.ExpandCollapseAnimation;
 
-public abstract class AbstractBoostAdapter extends BaseAdapter implements WrapperListAdapter{
+public abstract class AbstractBoostCursorAdapter extends CursorAdapter implements WrapperListAdapter{
 
-	private static final String	 TAG	          = "AbstractBoostAdapter";
+	private static final String	 TAG	          = "AbstractBoostCursorTreeAdapter";
 	/**
 	 * Reference to the last expanded list item.
 	 * Since lists are recycled this might be null if
@@ -47,14 +49,32 @@ public abstract class AbstractBoostAdapter extends BaseAdapter implements Wrappe
 	 */
 	private final SparseIntArray	viewHeights	  = new SparseIntArray(10);
 
-	protected BaseAdapter	     wrapped;
+	protected CursorAdapter	     wrapped;
 
 
-	public AbstractBoostAdapter(BaseAdapter wrapped){
+	public AbstractBoostCursorAdapter(CursorAdapter toBeWrapped,
+	                                  Context context,
+	                                  Cursor c,
+	                                  boolean autoRequery){
 
-		super();
+		super(context,
+		      c,
+		      autoRequery);
 
-		this.wrapped = wrapped;
+		wrapped = toBeWrapped;
+	}
+
+
+	public AbstractBoostCursorAdapter(CursorAdapter toBeWrapped,
+	                                  Context context,
+	                                  Cursor c,
+	                                  int flags){
+
+		super(context,
+		      c,
+		      flags);
+
+		wrapped = toBeWrapped;
 	}
 
 
@@ -70,6 +90,24 @@ public abstract class AbstractBoostAdapter extends BaseAdapter implements Wrappe
 		          position);
 
 		return convertView;
+	}
+
+
+	@Override
+	public void bindView(View arg0, Context arg1, Cursor arg2){
+
+		wrapped.bindView(arg0,
+		                 arg1,
+		                 arg2);
+	}
+
+
+	@Override
+	public View newView(Context arg0, Cursor arg1, ViewGroup arg2){
+
+		return wrapped.newView(arg0,
+		                       arg1,
+		                       arg2);
 	}
 
 
