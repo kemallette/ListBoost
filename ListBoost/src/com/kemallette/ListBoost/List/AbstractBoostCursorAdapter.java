@@ -21,7 +21,7 @@ import com.kemallette.ListBoost.Util.ExpandCollapseAnimation;
 
 public abstract class AbstractBoostCursorAdapter extends CursorAdapter implements WrapperListAdapter{
 
-	private static final String	 TAG	          = "AbstractBoostCursorTreeAdapter";
+	private static final String	 TAG	          = "BaseBoostCursorTreeAdapter";
 	/**
 	 * Reference to the last expanded list item.
 	 * Since lists are recycled this might be null if
