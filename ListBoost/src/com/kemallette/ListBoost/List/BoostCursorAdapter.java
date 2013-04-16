@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.kemallette.ListBoost.List.BoostListView.OnActionClickListener;
 
 
-public class BoostCursorAdapter extends AbstractBoostCursorAdapter{
+public class BoostCursorAdapter extends BaseBoostCursorAdapter{
 
 	private static final String	TAG	= "BoostCursorAdapter";
 

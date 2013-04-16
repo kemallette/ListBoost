@@ -15,7 +15,7 @@ import com.kemallette.ListBoost.List.BoostListView.OnActionClickListener;
  * the contructor.
  */
 public class BoostAdapter	extends
-							AbstractBoostAdapter{
+							BaseBoostAdapter{
 
 	private static final String	TAG					= "BoostAdapter";
 

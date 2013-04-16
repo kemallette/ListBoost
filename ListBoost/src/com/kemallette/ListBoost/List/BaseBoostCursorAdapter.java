@@ -3,92 +3,125 @@ package com.kemallette.ListBoost.List;
 
 import java.util.BitSet;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.database.DataSetObserver;
-import android.graphics.Rect;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.widget.CursorAdapter;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.WrapperListAdapter;
 
 import com.kemallette.ListBoost.Util.ExpandCollapseAnimation;
 
-public abstract class AbstractBoostAdapter	extends
-											BaseAdapter	implements
-														WrapperListAdapter{
+public abstract class BaseBoostCursorAdapter extends CursorAdapter implements WrapperListAdapter{
 
-	private static final String		TAG					= "AbstractBoostAdapter";
+	private static final String	 TAG	          = "BaseBoostCursorTreeAdapter";
 	/**
-	 * Reference to the last expanded list item. Since lists are recycled this
-	 * might be null if though there is an expanded list item
+	 * Reference to the last expanded list item.
+	 * Since lists are recycled this might be null if
+	 * though there is an expanded list item
 	 */
-	private View					lastOpen			= null;
+	private View	             lastOpen	      = null;
 	/**
-	 * The position of the last expanded list item. If -1 there is no list item
-	 * expanded. Otherwise it points to the position of the last expanded list
-	 * item
+	 * The position of the last expanded list item.
+	 * If -1 there is no list item expanded.
+	 * Otherwise it points to the position of the last expanded list item
 	 */
-	private int						lastOpenPosition	= -1;
+	private int	                 lastOpenPosition	= -1;
 	/**
-	 * A list of positions of all list items that are expanded. Normally only
-	 * one is expanded. But a mode to expand multiple will be added soon.
+	 * A list of positions of all list items that are expanded.
+	 * Normally only one is expanded. But a mode to expand
+	 * multiple will be added soon.
 	 * 
 	 * If an item on position x is open, its bit is set
 	 */
-	private BitSet					openItems			= new BitSet();
+	private BitSet	             openItems	      = new BitSet();
 	/**
-	 * We remember, for each collapsable view its height. So we dont need to
-	 * recalculate. The height is calculated just before the view is drawn.
+	 * We remember, for each collapsable view its height.
+	 * So we dont need to recalculate.
+	 * The height is calculated just before the view is drawn.
 	 */
-	private final SparseIntArray	viewHeights			= new SparseIntArray(10);
+	private final SparseIntArray	viewHeights	  = new SparseIntArray(10);
 
-	protected BaseAdapter			wrapped;
-
-	private ViewGroup				parent;
+	protected CursorAdapter	     wrapped;
 
 
-	public AbstractBoostAdapter(BaseAdapter wrapped){
+	public BaseBoostCursorAdapter(CursorAdapter toBeWrapped,
+	                                  Context context,
+	                                  Cursor c,
+	                                  boolean autoRequery){
 
-		super();
+		super(context,
+		      c,
+		      autoRequery);
 
-		this.wrapped = wrapped;
+		wrapped = toBeWrapped;
+	}
+
+
+	public BaseBoostCursorAdapter(CursorAdapter toBeWrapped,
+	                                  Context context,
+	                                  Cursor c,
+	                                  int flags){
+
+		super(context,
+		      c,
+		      flags);
+
+		wrapped = toBeWrapped;
 	}
 
 
 	@Override
 	public View
-		getView(int position, View convertView, ViewGroup viewGroup){
+	    getView(int position, View convertView, ViewGroup viewGroup){
 
-		this.parent = viewGroup;
+		convertView = wrapped.getView(position,
+		                              convertView,
+		                              viewGroup);
 
-		convertView = wrapped.getView(	position,
-										convertView,
-										viewGroup);
-		enableFor(	convertView,
-					position);
+		enableFor(convertView,
+		          position);
 
 		return convertView;
 	}
 
 
+	@Override
+	public void bindView(View arg0, Context arg1, Cursor arg2){
+
+		wrapped.bindView(arg0,
+		                 arg1,
+		                 arg2);
+	}
+
+
+	@Override
+	public View newView(Context arg0, Cursor arg1, ViewGroup arg2){
+
+		return wrapped.newView(arg0,
+		                       arg1,
+		                       arg2);
+	}
+
+
 	/**
-	 * This method is used to get the Button view that should expand or collapse
-	 * the Expandable View. <br/>
+	 * This method is used to get the Button view that should
+	 * expand or collapse the Expandable View. <br/>
 	 * Normally it will be implemented as:
 	 * 
 	 * <pre>
 	 * return parent.findViewById(R.id.expand_toggle_button)
 	 * </pre>
 	 * 
-	 * A listener will be attached to the button which will either expand or
-	 * collapse the expandable view
+	 * A listener will be attached to the button which will
+	 * either expand or collapse the expandable view
 	 * 
 	 * @see #getExpandableView(View)
 	 * @param parent
@@ -100,9 +133,9 @@ public abstract class AbstractBoostAdapter	extends
 
 
 	/**
-	 * This method is used to get the view that will be hidden initially and
-	 * expands or collapse when the ExpandToggleButton is pressed @see
-	 * getExpandToggleButton <br/>
+	 * This method is used to get the view that will be hidden
+	 * initially and expands or collapse when the ExpandToggleButton
+	 * is pressed @see getExpandToggleButton <br/>
 	 * Normally it will be implemented as:
 	 * 
 	 * <pre>
@@ -113,15 +146,15 @@ public abstract class AbstractBoostAdapter	extends
 	 * @param parent
 	 *            the list view item
 	 * @ensure return!=null
-	 * @return a child of parent which is a view (or often ViewGroup) that can
-	 *         be collapsed and expanded
+	 * @return a child of parent which is a view (or often ViewGroup)
+	 *         that can be collapsed and expanded
 	 */
 	public abstract View getExpandableView(View parent);
 
 
 	/**
-	 * Gets the duration of the collapse animation in ms. Default is 330ms.
-	 * Override this method to change the default.
+	 * Gets the duration of the collapse animation in ms.
+	 * Default is 330ms. Override this method to change the default.
 	 * 
 	 * @return the duration of the anim in ms
 	 */
@@ -136,20 +169,20 @@ public abstract class AbstractBoostAdapter	extends
 		View more = getExpandToggleButton(parent);
 		View itemToolbar = getExpandableView(parent);
 		itemToolbar.measure(parent.getWidth(),
-							parent.getHeight());
+		                    parent.getHeight());
 
-		enableFor(	more,
-					itemToolbar,
-					position);
+		enableFor(more,
+		          itemToolbar,
+		          position);
 	}
 
 
 	private void enableFor(final View button,
-							final View target,
-							final int position){
+	                       final View target,
+	                       final int position){
 
 		if (target == lastOpen
-			&& position != lastOpenPosition){
+		    && position != lastOpenPosition){
 			// lastOpen is recycled, so its reference is false
 			lastOpen = null;
 		}
@@ -158,16 +191,16 @@ public abstract class AbstractBoostAdapter	extends
 			// so when can animate it when collapsed
 			lastOpen = target;
 		}
-		int height = viewHeights.get(	position,
-										-1);
+		int height = viewHeights.get(position,
+		                             -1);
 		if (height == -1){
 			viewHeights.put(position,
-							target.getMeasuredHeight());
-			updateExpandable(	target,
-								position);
+			                target.getMeasuredHeight());
+			updateExpandable(target,
+			                 position);
 		}else{
-			updateExpandable(	target,
-								position);
+			updateExpandable(target,
+			                 position);
 		}
 
 		button.setOnClickListener(new View.OnClickListener(){
@@ -178,28 +211,28 @@ public abstract class AbstractBoostAdapter	extends
 				view.setAnimation(null);
 				// check wether we need to expand or collapse
 				int type =
-							target.getVisibility() == View.VISIBLE
-																	? ExpandCollapseAnimation.COLLAPSE
-																	: ExpandCollapseAnimation.EXPAND;
+				           target.getVisibility() == View.VISIBLE
+				                                                 ? ExpandCollapseAnimation.COLLAPSE
+				                                                 : ExpandCollapseAnimation.EXPAND;
 
 				// remember the state
 				if (type == ExpandCollapseAnimation.EXPAND){
-					openItems.set(	position,
-									true);
+					openItems.set(position,
+					              true);
 				}else{
-					openItems.set(	position,
-									false);
+					openItems.set(position,
+					              false);
 				}
 				// check if we need to collapse a different view
 				if (type == ExpandCollapseAnimation.EXPAND){
 					if (lastOpenPosition != -1
-						&& lastOpenPosition != position){
+					    && lastOpenPosition != position){
 						if (lastOpen != null){
 							animateView(lastOpen,
-										ExpandCollapseAnimation.COLLAPSE);
+							            ExpandCollapseAnimation.COLLAPSE);
 						}
-						openItems.set(	lastOpenPosition,
-										false);
+						openItems.set(lastOpenPosition,
+						              false);
 					}
 					lastOpen = target;
 					lastOpenPosition = position;
@@ -208,7 +241,7 @@ public abstract class AbstractBoostAdapter	extends
 				}
 
 				animateView(target,
-							type);
+				            type);
 			}
 		});
 	}
@@ -217,7 +250,7 @@ public abstract class AbstractBoostAdapter	extends
 	private void updateExpandable(View target, int position){
 
 		final LinearLayout.LayoutParams params =
-													(LinearLayout.LayoutParams) target.getLayoutParams();
+		                                         (LinearLayout.LayoutParams) target.getLayoutParams();
 		if (openItems.get(position)){
 			target.setVisibility(View.VISIBLE);
 			params.bottomMargin = 0;
@@ -234,64 +267,22 @@ public abstract class AbstractBoostAdapter	extends
 	 * @param target
 	 *            the view to animate
 	 * @param type
-	 *            the animation type, either ExpandCollapseAnimation.COLLAPSE or
-	 *            ExpandCollapseAnimation.EXPAND
+	 *            the animation type, either
+	 *            ExpandCollapseAnimation.COLLAPSE
+	 *            or ExpandCollapseAnimation.EXPAND
 	 */
 	private void animateView(final View target, final int type){
 
-
-		Animation anim = new ExpandCollapseAnimation(
-														target,
-														type
-							);
+		Animation anim = new ExpandCollapseAnimation(target,
+		                                             type);
 		anim.setDuration(getAnimationDuration());
-		anim.setAnimationListener(new AnimationListener(){
-
-			@Override
-			public void onAnimationStart(Animation animation){
-
-			}
-
-
-			@Override
-			public void onAnimationRepeat(Animation animation){
-
-			}
-
-
-			@Override
-			public void onAnimationEnd(Animation animation){
-
-				if (type == ExpandCollapseAnimation.EXPAND){
-					if (parent instanceof ListView){
-						ListView listView = (ListView) parent;
-						int movement = target.getBottom();
-						Rect r = new Rect();
-						boolean visible = target.getGlobalVisibleRect(r);
-						Rect r2 = new Rect();
-						listView.getGlobalVisibleRect(r2);
-						if (!visible){
-							listView.smoothScrollBy(movement,
-													1000);
-						}else{
-							if (r2.bottom == r.bottom){
-								listView.smoothScrollBy(movement,
-														1000);
-							}
-						}
-					}
-				}
-
-			}
-		});
 		target.startAnimation(anim);
-
 	}
 
 
 	/**
-	 * Closes the current open item. If it is current visible it will be closed
-	 * with an animation.
+	 * Closes the current open item.
+	 * If it is current visible it will be closed with an animation.
 	 * 
 	 * @return true if an item was closed, false otherwise
 	 */
@@ -301,10 +292,10 @@ public abstract class AbstractBoostAdapter	extends
 			// if visible animate it out
 			if (lastOpen != null){
 				animateView(lastOpen,
-							ExpandCollapseAnimation.COLLAPSE);
+				            ExpandCollapseAnimation.COLLAPSE);
 			}
-			openItems.set(	lastOpenPosition,
-							false);
+			openItems.set(lastOpenPosition,
+			              false);
 			lastOpenPosition = -1;
 			return true;
 		}
@@ -349,7 +340,7 @@ public abstract class AbstractBoostAdapter	extends
 		int nextSetBit = -1;
 
 		if (dest != null
-			&& set != null)
+		    && set != null)
 			dest.writeInt(set.cardinality());
 
 		while ((nextSetBit = set.nextSetBit(nextSetBit + 1)) != -1){
@@ -360,10 +351,9 @@ public abstract class AbstractBoostAdapter	extends
 	/**
 	 * The actual state class
 	 */
-	static class SavedState	extends
-							View.BaseSavedState{
+	static class SavedState extends View.BaseSavedState{
 
-		public BitSet	openItems			= null;
+		public BitSet	openItems		 = null;
 		public int		lastOpenPosition	= -1;
 
 
@@ -378,7 +368,7 @@ public abstract class AbstractBoostAdapter	extends
 			super(in);
 			in.writeInt(lastOpenPosition);
 			writeBitSet(in,
-						openItems);
+			            openItems);
 		}
 
 
@@ -386,28 +376,28 @@ public abstract class AbstractBoostAdapter	extends
 		public void writeToParcel(Parcel out, int flags){
 
 			super.writeToParcel(out,
-								flags);
+			                    flags);
 			lastOpenPosition = out.readInt();
 			openItems = readBitSet(out);
 		}
 
 		// required field that makes Parcelables from a Parcel
 		public static final Parcelable.Creator<SavedState>	CREATOR	=
-																		new Parcelable.Creator<SavedState>(){
+		                                                              new Parcelable.Creator<SavedState>(){
 
-																			public SavedState
-																				createFromParcel(Parcel in){
+			                                                              public SavedState
+			                                                                  createFromParcel(Parcel in){
 
-																				return new SavedState(in);
-																			}
+				                                                              return new SavedState(in);
+			                                                              }
 
 
-																			public SavedState[]
-																				newArray(int size){
+			                                                              public SavedState[]
+			                                                                  newArray(int size){
 
-																				return new SavedState[size];
-																			}
-																		};
+				                                                              return new SavedState[size];
+			                                                              }
+		                                                              };
 	}
 
 

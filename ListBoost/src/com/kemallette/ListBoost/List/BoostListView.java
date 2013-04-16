@@ -135,13 +135,13 @@ public class BoostListView extends ListView{
 	@Override
 	public void onRestoreInstanceState(Parcelable state){
 
-		if (!(state instanceof AbstractBoostAdapter.SavedState)){
+		if (!(state instanceof BaseBoostAdapter.SavedState)){
 			super.onRestoreInstanceState(state);
 			return;
 		}
 
-		AbstractBoostAdapter.SavedState ss =
-		                                     (AbstractBoostAdapter.SavedState) state;
+		BaseBoostAdapter.SavedState ss =
+		                                     (BaseBoostAdapter.SavedState) state;
 		super.onRestoreInstanceState(ss.getSuperState());
 
 		if (adapter != null)
