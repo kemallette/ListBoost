@@ -48,6 +48,14 @@ public class ExamplesListFrag	extends
 	}
 
 
+	public static ExamplesListFrag newInstance(){
+
+		ExamplesListFrag mFrag = new ExamplesListFrag();
+
+		return mFrag;
+	}
+
+
 	@Override
 	public View onCreateView(LayoutInflater inflater,
 								ViewGroup container,
@@ -110,5 +118,6 @@ public class ExamplesListFrag	extends
 
 		mCallbacks.onItemSelected(position);
 	}
+
 
 }

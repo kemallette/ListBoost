@@ -50,41 +50,48 @@ public class ExamplesListActivity	extends
 			case LIST_SWIPE:
 			case LIST_MULTI_SELECT:
 			case LIST_DRAG_SORT:
-				if (mListFrag == null)
-					initListFrag(BoostListFragment.newInstance(mBundle));
+				showListFrag(mBundle);
 				break;
 
 			case EXPANDABLE_SLIDING:
-				break;
-
 			case EXPANDABLE_SWIPE:
-				break;
-
 			case EXPANDABLE_MULTI_SELECT:
-				break;
-
 			case EXPANDABLE_DRAG_SORT:
+				showExpandableListFrag(mBundle);
 				break;
 		}
 	}
 
 
-	private void initListFrag(SherlockFragment mFrag){
+	private void showExpandableListFrag(Bundle mBundle){
 
 		FragmentTransaction mTransaction = getSupportFragmentManager().beginTransaction();
-		mTransaction.replace(	R.id.container,
-								mFrag);
+
+		if (mExpandableListFrag == null){
+			mExpandableListFrag = ExamplesExpandableListFrag.newInstance();
+			mTransaction.add(	R.id.container,
+								mExpandableListFrag);
+		}else
+			mTransaction.replace(	R.id.container,
+									mExpandableListFrag);
+
 		mTransaction.commit();
 	}
 
 
-	private void initExpandableListFrag(SherlockFragment mFrag, Bundle args){
+	private void showListFrag(Bundle mBundle){
 
-		mFrag.setArguments(args);
 
 		FragmentTransaction mTransaction = getSupportFragmentManager().beginTransaction();
-		mTransaction.replace(	R.id.container,
-								mFrag);
+
+		if (mListFrag == null){
+			mListFrag = ExamplesListFrag.newInstance();
+			mTransaction.add(	R.id.container,
+								mListFrag);
+		}else
+			mTransaction.replace(	R.id.container,
+									mListFrag);
+
 		mTransaction.commit();
 	}
 }
