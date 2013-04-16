@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
     <com.kemallette.ListBoost.List.BoostListView
         android:id="@+id/list"
@@ -9,4 +10,4 @@
         android:layout_height="match_parent" >
     </com.kemallette.ListBoost.List.BoostListView>
 
-</RelativeLayout>
+</LinearLayout>
