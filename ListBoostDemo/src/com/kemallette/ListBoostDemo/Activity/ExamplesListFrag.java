@@ -1,10 +1,6 @@
 package com.kemallette.ListBoostDemo.Activity;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,31 +8,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.kemallette.ListBoost.List.BoostAdapter;
 import com.kemallette.ListBoost.List.BoostListView;
 import com.kemallette.ListBoostDemo.R;
-import com.kemallette.ListBoostDemo.Task.Tasks;
 
 public class ExamplesListFrag	extends
 								SherlockFragment implements
 												OnItemClickListener{
 
-	/**
-	 * A callback interface that all activities containing this fragment must
-	 * implement. This mechanism allows activities to be notified of item
-	 * selections.
-	 */
-	public interface Callbacks{
-
-		public void onItemSelected(int position);
-	}
-
-	private Callbacks			mCallbacks;
-	private ArrayList<String>	mItems;
-	private BoostListView		mList;
+	private BoostListView	mList;
 
 
 	/**
@@ -63,7 +44,7 @@ public class ExamplesListFrag	extends
 
 		return inflater.inflate(R.layout.examples_list_frag,
 								container,
-								true);
+								false);
 	}
 
 
@@ -74,50 +55,45 @@ public class ExamplesListFrag	extends
 							savedInstanceState);
 
 		init();
-
-	}
-
-
-	@Override
-	public void onAttach(Activity activity){
-
-		super.onAttach(activity);
-
-		// Activities containing this fragment must implement its callbacks.
-		if (!(activity instanceof Callbacks))
-			throw new IllegalStateException("Activity must implement fragment's callbacks.");
-
-		mCallbacks = (Callbacks) activity;
 	}
 
 
 	private void init(){
 
-		Collections.addAll(	mItems,
-							getActivity().getResources()
-											.getStringArray(R.array.list_examples));
+		Bundle args = getArguments();
+
+		if (args != null
+			&& !args.isEmpty()){
+
+		}
 
 		mList = (BoostListView) getView().findViewById(R.id.list);
 
-		ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(
-																	getActivity(),
-																	android.R.layout.simple_list_item_activated_1,
-																	android.R.id.text1,
-																	mItems);
+		setAdapter();
+	}
 
-		BoostAdapter mBoostAdapter = new BoostAdapter(	mAdapter,
-														null,
-														null);
-		mList.setAdapter(mBoostAdapter);
+
+	private void setAdapter(){
+
+		String[] mData = getResources().getStringArray(R.array.list_examples);
+
+		ArrayAdapter<String> mBaseAdapter = new ArrayAdapter<String>(	getActivity(),
+																		R.layout.simple_list_item,
+																		android.R.id.text1,
+																		mData);
+
+
+		mList.setAdapter(mBaseAdapter);
+		mList.setOnItemClickListener(this);
 	}
 
 
 	@Override
 	public void
-		onItemClick(AdapterView<?> list, View item, int position, long id){
+		onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3){
 
-		mCallbacks.onItemSelected(position);
+		ActivityUtil.launchBoostDemoActivity(	getActivity(),
+												position);
 	}
-
 
 }

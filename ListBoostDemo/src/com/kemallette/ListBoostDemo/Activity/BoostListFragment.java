@@ -1,20 +1,28 @@
 package com.kemallette.ListBoostDemo.Activity;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.kemallette.ListBoost.List.BoostAdapter;
 import com.kemallette.ListBoost.List.BoostListView;
 import com.kemallette.ListBoostDemo.R;
+import com.kemallette.ListBoostDemo.Activity.ActivityUtil.Callbacks;
 
 
 public class BoostListFragment	extends
-								SherlockFragment{
+								SherlockFragment implements
+												Callbacks{
 
-	private BoostListView	mList;
+	private ArrayList<String>	mItems;
+	private BoostListView		mList;
 
 
 	public BoostListFragment(){
@@ -50,19 +58,85 @@ public class BoostListFragment	extends
 							savedInstanceState);
 
 		init();
+
 	}
 
 
 	private void init(){
 
-		Bundle args = getArguments();
+		Collections.addAll(	mItems,
+							getActivity().getResources()
+											.getStringArray(R.array.list_examples));
 
-		if (args != null
-			&& !args.isEmpty()) {
-			
-		}
+		mList = (BoostListView) getView().findViewById(R.id.list);
 
-			mList = (BoostListView) getView().findViewById(R.id.list);
+		ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(
+																	getActivity(),
+																	android.R.layout.simple_list_item_activated_1,
+																	android.R.id.text1,
+																	mItems);
+
+		BoostAdapter mBoostAdapter = new BoostAdapter(	mAdapter,
+														null,
+														null);
+		mList.setAdapter(mBoostAdapter);
 	}
+
+
+	@Override
+	public void enableSwipe(){
+
+
+	}
+
+
+	@Override
+	public void disableSwipe(){
+
+
+	}
+
+
+	@Override
+	public void enableSliding(){
+
+
+	}
+
+
+	@Override
+	public void disableSliding(){
+
+
+	}
+
+
+	@Override
+	public void enableMultiSelect(){
+
+
+	}
+
+
+	@Override
+	public void disableMultiSelect(){
+
+
+	}
+
+
+	@Override
+	public void enableDragSort(){
+
+
+	}
+
+
+	@Override
+	public void disableDragSort(){
+
+
+	}
+
 
 }
