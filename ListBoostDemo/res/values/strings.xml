@@ -5,10 +5,10 @@
     <string name="title_task_detail">Task Detail</string>
 
     <string-array name="list_examples">
-        <item>Sliding Context Menu List</item>
-        <item>Sliding Context Menu Expandable List</item>
-        <item>Swipe to Reveal Context Menu List</item>
-        <item>Swipe to Reveal Context Menu Expandable List</item>
+        <item>Sliding Menu List</item>
+        <item>Sliding Menu Expandable List</item>
+        <item>Swipe to Reveal List</item>
+        <item>Swipe to Reveal Expandable List</item>
         <item>Multiple Choice List</item>
         <item>Multiple Choice Expandable List</item>
         <item>Drag and Drop Sort List</item>

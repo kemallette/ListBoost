@@ -31,7 +31,6 @@ public class BoostDemoActivity	extends
 
 		super.onCreate(arg0);
 		setContentView(R.layout.examples_list_activity);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		listMode = ActivityUtil.getListMode(getIntent());
 

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:rts="http://schemas.android.com/apk/res/com.LiftPro.Premium"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical"
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <Button
+            android:id="@+id/slide_toggle_button"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="#00FFFFFF"
+            android:drawableRight="@drawable/ic_more_corner_arrow"
+            android:focusable="false" />
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toLeftOf="@+id/expandable_toggle_button" >
+        </TextView>
+    </RelativeLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/sliding_view_id"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="fill|center_horizontal" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/edit"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:focusable="false"
+                android:text="Tap me!" />
+
+            <Button
+                android:id="@+id/addToMusclegroup"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:focusable="false"
+                android:text="Or me!" />
+
+            <Button
+                android:id="@+id/addToRoutine"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:focusable="false"
+                android:text="Please?" />
+
+            <Button
+                android:id="@+id/delete"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:focusable="false"
+                android:text="Last chance!" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</LinearLayout>

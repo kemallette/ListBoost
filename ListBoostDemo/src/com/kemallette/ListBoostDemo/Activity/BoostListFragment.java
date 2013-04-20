@@ -23,6 +23,7 @@ public class BoostListFragment	extends
 
 	private ArrayList<String>	mItems;
 	private BoostListView		mList;
+	private BoostAdapter		mAdapter;
 
 
 	public BoostListFragment(){
@@ -86,6 +87,10 @@ public class BoostListFragment	extends
 	@Override
 	public void enableSwipe(){
 
+		if (mAdapter != null){
+
+			// mAdapter.enableSwipe();
+		}
 
 	}
 
@@ -100,7 +105,9 @@ public class BoostListFragment	extends
 	@Override
 	public void enableSliding(){
 
-
+		if (mAdapter != null){
+			// mAdapter.enableSlidingMenu();
+		}
 	}
 
 

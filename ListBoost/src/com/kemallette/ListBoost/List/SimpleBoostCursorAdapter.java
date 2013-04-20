@@ -5,37 +5,27 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
 
-import com.kemallette.ListBoost.List.BoostListView.OnActionClickListener;
 
-
-public class SimpleBoostCursorAdapter extends BoostCursorAdapter{
+public class SimpleBoostCursorAdapter	extends
+										BoostCursorAdapter{
 
 	private static final String	TAG	= "SimpleBoostCursorAdapter";
 
 
 	public SimpleBoostCursorAdapter(Context context,
-	                                int itemLayout,
-	                                Cursor c,
-	                                String[] from,
-	                                int[] to,
-	                                int flags,
-	                                OnActionClickListener mActionListener,
-	                                int toggleButtonId,
-	                                int expandableViewId,
-	                                int... expandableViewButtonIds){
+									int itemLayout,
+									Cursor c,
+									String[] from,
+									int[] to,
+									int flags){
 
-		super(new SimpleCursorAdapter(context,
-		                              itemLayout,
-		                              c,
-		                              from,
-		                              to,
-		                              flags),
-		      context,
-		      mActionListener,
-		      toggleButtonId,
-		      expandableViewId,
-		      flags,
-		      expandableViewButtonIds);
+		super(	new SimpleCursorAdapter(context,
+										itemLayout,
+										c,
+										from,
+										to,
+										flags),
+				context);
 
 	}
 
