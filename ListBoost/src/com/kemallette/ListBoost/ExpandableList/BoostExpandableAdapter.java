@@ -16,4 +16,7 @@ public interface BoostExpandableAdapter	extends
 
 	public void notifyDataSetChanged();
 
+
+	public ExpandableListAdapter getWrappedAdapter();
+
 }
