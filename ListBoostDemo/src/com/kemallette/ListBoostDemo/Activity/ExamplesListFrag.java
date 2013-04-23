@@ -60,13 +60,6 @@ public class ExamplesListFrag	extends
 
 	private void init(){
 
-		Bundle args = getArguments();
-
-		if (args != null
-			&& !args.isEmpty()){
-
-		}
-
 		mList = (BoostListView) getView().findViewById(R.id.list);
 
 		setAdapter();
@@ -78,7 +71,7 @@ public class ExamplesListFrag	extends
 		String[] mData = getResources().getStringArray(R.array.list_examples);
 
 		ArrayAdapter<String> mBaseAdapter = new ArrayAdapter<String>(	getActivity(),
-																		R.layout.simple_list_item,
+																		android.R.layout.simple_list_item_1,
 																		android.R.id.text1,
 																		mData);
 

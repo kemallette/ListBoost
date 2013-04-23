@@ -6,9 +6,7 @@ An Android library that will implement these major features:
 ##ListView and ExpandableListView##
   - Sliding list item menus
   - Swipe-to-reveal menus
-  - Drag to reorder 
-
-##ExpandableListView##
+  - Drag to reorder  
   - MultiSelect mode
 
 

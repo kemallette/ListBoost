@@ -35,14 +35,16 @@ public class ActivityUtil{
 	}
 
 	public static final int
-							LIST_SLIDING	= 1,
-											LIST_SWIPE = 3,
-											LIST_MULTI_SELECT = 5,
-											LIST_DRAG_SORT = 7,
-											EXPANDABLE_SLIDING = 2,
-											EXPANDABLE_SWIPE = 4,
-											EXPANDABLE_MULTI_SELECT = 6,
-											EXPANDABLE_DRAG_SORT = 8;
+								LIST_SLIDING	= 0,
+												LIST_SWIPE = 2,
+												LIST_MULTI_SELECT = 4,
+												LIST_DRAG_SORT = 6,
+												EXPANDABLE_SLIDING = 1,
+												EXPANDABLE_SWIPE = 3,
+												EXPANDABLE_MULTI_SELECT = 5,
+												EXPANDABLE_DRAG_SORT = 7;
+
+	public static final String	LIST_FEATURE	= "list_feature";
 
 
 	public static int getListMode(Intent mActivityIntent){
@@ -51,10 +53,8 @@ public class ActivityUtil{
 		Bundle mExtras = mActivityIntent.getExtras();
 
 		if (mExtras != null
-			&& !mExtras.isEmpty()){
-
-			listMode = mExtras.getInt("list_feature");
-		}
+			&& !mExtras.isEmpty())
+			listMode = mExtras.getInt(LIST_FEATURE);
 
 		return listMode;
 	}
@@ -66,7 +66,7 @@ public class ActivityUtil{
 		Intent mIntent = new Intent();
 		mIntent.setClass(	mActivity,
 							BoostDemoActivity.class);
-		mIntent.putExtra(	"list_feature",
+		mIntent.putExtra(	LIST_FEATURE,
 							listMode);
 		mActivity.startActivity(mIntent);
 

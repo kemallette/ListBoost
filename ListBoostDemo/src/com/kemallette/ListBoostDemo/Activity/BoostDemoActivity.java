@@ -75,9 +75,10 @@ public class BoostDemoActivity	extends
 			case EXPANDABLE_SLIDING:
 			case EXPANDABLE_SWIPE:
 				if (mExpandableListFrag == null){
-					mExpandableListFrag = BoostExpandableListFragment.newInstance();
+					mExpandableListFrag = BoostExpandableListFragment.newInstance(listMode);
 					mTransaction.add(	R.id.container,
 										mExpandableListFrag);
+					mTransaction.commit();
 				}
 				break;
 			case LIST_DRAG_SORT:
@@ -85,14 +86,14 @@ public class BoostDemoActivity	extends
 			case LIST_SLIDING:
 			case LIST_SWIPE:
 				if (mListFrag == null){
-					mListFrag = ExamplesListFrag.newInstance();
+					mListFrag = BoostListFragment.newInstance(listMode);
 					mTransaction.add(	R.id.container,
 										mListFrag);
 					mTransaction.commit();
 				}
 				break;
 		}
-		mTransaction.commit();
+
 
 	}
 

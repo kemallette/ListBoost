@@ -1,6 +1,8 @@
 package com.kemallette.ListBoostDemo.Activity;
 
 
+import android.os.Bundle;
+
 import com.actionbarsherlock.app.SherlockFragment;
 import com.kemallette.ListBoostDemo.Activity.ActivityUtil.Callbacks;
 
@@ -10,9 +12,16 @@ public class BoostExpandableListFragment extends
 														Callbacks{
 
 
-	public static BoostExpandableListFragment newInstance(){
+	public static BoostExpandableListFragment newInstance(int listFeature){
 
-		return new BoostExpandableListFragment();
+		BoostExpandableListFragment mFrag = new BoostExpandableListFragment();
+
+		Bundle mBundle = new Bundle();
+		mBundle.putInt(	ActivityUtil.LIST_FEATURE,
+						listFeature);
+		mFrag.setArguments(mBundle);
+
+		return mFrag;
 	}
 
 

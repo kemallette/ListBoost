@@ -27,42 +27,42 @@ public class Tasks{
 	static{
 		// Add sample tasks.
 		addTask(new Task(	1,
-							"Take out trash",
-							"Garbage trucks pick-up on Monday mornings."));
+							"<b>Take out trash</b>",
+							"<br><i>Garbage trucks pick-up on Monday mornings.</i>"));
 
 		addTask(new Task(	2,
-							"Pick-up Groceries",
-							"Check coupons before heading out."));
+							"<b>Pick-up Groceries</b>",
+							"<br><i>Check coupons before heading out.</i>"));
 		addTask(new Task(	3,
-							"Do work",
-							"Finish implementing ListBoost."));
+							"<b>Do work</b>",
+							"<br><i>Finish implementing ListBoost.</i>"));
 		addTask(new Task(	4,
-							"Dishes",
-							"Hand wash the nicer dishes."));
+							"<b>Dishes</b>",
+							"<br><i>Hand wash the nicer dishes.</i>"));
 		addTask(new Task(	5,
-							"Laundry",
-							"Seperate colors like boss."));
+							"<b>Laundry</b>",
+							"<br><i>Seperate colors like boss.</i>"));
 		addTask(new Task(	6,
-							"Do more work",
-							"Finish implementing RichEditText"));
+							"<b>Do more work</b>",
+							"<br><i>Finish implementing RichEditText.</i>"));
 		addTask(new Task(	7,
-							"Workout",
-							"Don't ever skip legs."));
+							"<b>Workout</b>",
+							"<br><i>Don't ever skip legs.</i>"));
 		addTask(new Task(	8,
-							"Relax",
-							"You deserve it. Sort of."));
+							"<b>Relax</b>",
+							"<br><i>You deserve it. Sort of.</i>"));
 		addTask(new Task(	9,
-							"Do even more work",
-							"Finish implementing LiftProPremium."));
+							"<b>Do even more work</b>",
+							"<br><i>Finish implementing LiftProPremium.</i>"));
 		addTask(new Task(	10,
-							"Set up Pebble SDK",
-							"Better learn C."));
+							"<b>Set up Pebble SDK</b>",
+							"<br><i>Better learn C.</i>"));
 		addTask(new Task(	11,
-							"Waste time making task lists",
-							"But it feels like I'm being productive!"));
+							"<b>Waste time making task lists</b>",
+							"<br><i>But it feels like I'm being productive!</i>"));
 		addTask(new Task(	12,
-							"Go outside",
-							"Make sure you get your daily dose of Vitamin D."));
+							"<b>Go outside</b>",
+							"<br><i>Make sure you get your daily dose of Vitamin D.</i>"));
 
 	}
 
@@ -95,7 +95,6 @@ public class Tasks{
 		public String toString(){
 
 			return title
-					+ "\n"
 					+ content;
 		}
 	}
