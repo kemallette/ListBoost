@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.widget.ExpandableListAdapter;
+import android.widget.SimpleExpandableListAdapter;
 
 
 public class SimpleBoostExpandableAdapter	extends
@@ -23,19 +25,17 @@ public class SimpleBoostExpandableAdapter	extends
 										String[] childFrom,
 										int[] childTo){
 
-		super(	context,
+		this(	context,
 				expandableListView,
 				groupData,
-				expandedGroupLayout,
 				collapsedGroupLayout,
 				groupFrom,
 				groupTo,
 				childData,
 				childLayout,
-				lastChildLayout,
 				childFrom,
 				childTo);
-		// TODO Auto-generated constructor stub
+
 	}
 
 
@@ -51,10 +51,9 @@ public class SimpleBoostExpandableAdapter	extends
 										String[] childFrom,
 										int[] childTo){
 
-		super(	context,
+		this(	context,
 				expandableListView,
 				groupData,
-				expandedGroupLayout,
 				collapsedGroupLayout,
 				groupFrom,
 				groupTo,
@@ -62,7 +61,8 @@ public class SimpleBoostExpandableAdapter	extends
 				childLayout,
 				childFrom,
 				childTo);
-		// TODO Auto-generated constructor stub
+
+
 	}
 
 
@@ -77,17 +77,18 @@ public class SimpleBoostExpandableAdapter	extends
 										String[] childFrom,
 										int[] childTo){
 
+
 		super(	context,
 				expandableListView,
-				groupData,
-				groupLayout,
-				groupFrom,
-				groupTo,
-				childData,
-				childLayout,
-				childFrom,
-				childTo);
-		// TODO Auto-generated constructor stub
+				new SimpleExpandableListAdapter(context,
+												groupData,
+												groupLayout,
+												groupFrom,
+												groupTo,
+												childData,
+												childLayout,
+												childFrom,
+												childTo));
 	}
 
 

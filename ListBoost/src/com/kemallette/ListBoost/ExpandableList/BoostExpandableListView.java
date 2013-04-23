@@ -70,11 +70,8 @@ public class BoostExpandableListView extends
 	private BitSet									mCheckedGroups;
 	private HashMap<Integer, BitSet>				mCheckedChildren;
 
-	private BoostExpandableAdapter					mAdapter;
+	private BaseBoostExpandableAdapter				mAdapter;
 
-
-	// TODO: test for group/child count changes and make sure bitsets are
-	// long enough to deal with them
 
 	public BoostExpandableListView(	Context context,
 									AttributeSet attrs,
@@ -142,23 +139,13 @@ public class BoostExpandableListView extends
 	}
 
 
-	public void setAdapter(SimpleBoostExpandableAdapter adapter){
+	public void setAdapter(BaseBoostExpandableAdapter adapter){
 
 		super.setAdapter(adapter);
 
 		mAdapter = adapter;
 
 		((BaseBoostExpandableAdapter) mAdapter).setExpandableCheckListener(this);
-	}
-
-
-	public void setAdapter(SimpleBoostCursorTreeAdapter adapter){
-
-		super.setAdapter(adapter);
-
-		mAdapter = adapter;
-
-		((BaseBoostCursorTreeAdapter) mAdapter).setExpandableCheckListener(this);
 	}
 
 

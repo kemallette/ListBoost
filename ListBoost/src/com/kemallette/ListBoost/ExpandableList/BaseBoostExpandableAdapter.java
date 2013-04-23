@@ -1,27 +1,27 @@
 package com.kemallette.ListBoost.ExpandableList;
 
 
-import java.util.List;
-import java.util.Map;
-
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.SimpleExpandableListAdapter;
+import android.widget.ExpandableListAdapter;
 
 
 public abstract class BaseBoostExpandableAdapter extends
-													SimpleExpandableListAdapter	implements
-																				BoostExpandableAdapter,
-																				OnCheckedChangeListener{
+												BaseExpandableListAdapter	implements
+																			BoostExpandableAdapter,
+																			OnCheckedChangeListener{
 
 
 	private static final String	TAG	= "BaseBoostExpandableAdapter";
+
 
 	private class Holder{
 
@@ -34,85 +34,16 @@ public abstract class BaseBoostExpandableAdapter extends
 	private ExpandableListCheckListener	mCheckListener;
 
 	private BoostExpandableListView		mList;
+	private ExpandableListAdapter		wrapped;
 
 
 	public BaseBoostExpandableAdapter(	Context context,
-											BoostExpandableListView expandableListView,
-											List<? extends Map<String, ?>> groupData,
-											int expandedGroupLayout,
-											int collapsedGroupLayout,
-											String[] groupFrom,
-											int[] groupTo,
-											List<? extends List<? extends Map<String, ?>>> childData,
-											int childLayout,
-											int lastChildLayout,
-											String[] childFrom,
-											int[] childTo){
-
-		super(	context,
-				groupData,
-				expandedGroupLayout,
-				collapsedGroupLayout,
-				groupFrom,
-				groupTo,
-				childData,
-				childLayout,
-				lastChildLayout,
-				childFrom,
-				childTo);
+										BoostExpandableListView expandableListView,
+										ExpandableListAdapter adapterToWrap){
 
 
 		mList = expandableListView;
-	}
-
-
-	public BaseBoostExpandableAdapter(	Context context,
-											BoostExpandableListView expandableListView,
-											List<? extends Map<String, ?>> groupData,
-											int expandedGroupLayout,
-											int collapsedGroupLayout,
-											String[] groupFrom,
-											int[] groupTo,
-											List<? extends List<? extends Map<String, ?>>> childData,
-											int childLayout,
-											String[] childFrom,
-											int[] childTo){
-
-		super(	context,
-				groupData,
-				expandedGroupLayout,
-				collapsedGroupLayout,
-				groupFrom,
-				groupTo,
-				childData,
-				childLayout,
-				childFrom,
-				childTo);
-		mList = expandableListView;
-	}
-
-
-	public BaseBoostExpandableAdapter(	Context context,
-											BoostExpandableListView expandableListView,
-											List<? extends Map<String, ?>> groupData,
-											int groupLayout,
-											String[] groupFrom,
-											int[] groupTo,
-											List<? extends List<? extends Map<String, ?>>> childData,
-											int childLayout,
-											String[] childFrom,
-											int[] childTo){
-
-		super(	context,
-				groupData,
-				groupLayout,
-				groupFrom,
-				groupTo,
-				childData,
-				childLayout,
-				childFrom,
-				childTo);
-		mList = expandableListView;
+		wrapped = adapterToWrap;
 	}
 
 
@@ -163,7 +94,7 @@ public abstract class BaseBoostExpandableAdapter extends
 								ViewGroup parent){
 
 
-		convertView = super.getChildView(	groupPosition,
+		convertView = wrapped.getChildView(	groupPosition,
 											childPosition,
 											isLastChild,
 											convertView,
@@ -233,7 +164,7 @@ public abstract class BaseBoostExpandableAdapter extends
 								View convertView,
 								ViewGroup parent){
 
-		convertView = super.getGroupView(	groupPosition,
+		convertView = wrapped.getGroupView(	groupPosition,
 											isExpanded,
 											convertView,
 											parent);
@@ -305,5 +236,113 @@ public abstract class BaseBoostExpandableAdapter extends
 
 		mCheckListener = mListener;
 	}
+
+
+	@Override
+	public ExpandableListAdapter getWrappedAdapter(){
+
+		return wrapped;
+	}
+
+
+	public boolean areAllItemsEnabled(){
+
+		return wrapped.areAllItemsEnabled();
+	}
+
+
+	public Object getChild(int groupPosition, int childPosition){
+
+		return wrapped.getChild(groupPosition,
+								childPosition);
+	}
+
+
+	public long getChildId(int groupPosition, int childPosition){
+
+		return wrapped.getChildId(	groupPosition,
+									childPosition);
+	}
+
+
+	public int getChildrenCount(int groupPosition){
+
+		return wrapped.getChildrenCount(groupPosition);
+	}
+
+
+	public long getCombinedChildId(long groupId, long childId){
+
+		return wrapped.getCombinedChildId(	groupId,
+											childId);
+	}
+
+
+	public long getCombinedGroupId(long groupId){
+
+		return wrapped.getCombinedGroupId(groupId);
+	}
+
+
+	public Object getGroup(int groupPosition){
+
+		return wrapped.getGroup(groupPosition);
+	}
+
+
+	public int getGroupCount(){
+
+		return wrapped.getGroupCount();
+	}
+
+
+	public long getGroupId(int groupPosition){
+
+		return wrapped.getGroupId(groupPosition);
+	}
+
+
+	public boolean hasStableIds(){
+
+		return wrapped.hasStableIds();
+	}
+
+
+	public boolean isChildSelectable(int groupPosition, int childPosition){
+
+		return wrapped.isChildSelectable(	groupPosition,
+											childPosition);
+	}
+
+
+	public boolean isEmpty(){
+
+		return wrapped.isEmpty();
+	}
+
+
+	public void onGroupCollapsed(int groupPosition){
+
+		wrapped.onGroupCollapsed(groupPosition);
+	}
+
+
+	public void onGroupExpanded(int groupPosition){
+
+		wrapped.onGroupExpanded(groupPosition);
+	}
+
+
+	public void registerDataSetObserver(DataSetObserver observer){
+
+		wrapped.registerDataSetObserver(observer);
+	}
+
+
+	public void unregisterDataSetObserver(DataSetObserver observer){
+
+		wrapped.unregisterDataSetObserver(observer);
+	}
+
 
 }
