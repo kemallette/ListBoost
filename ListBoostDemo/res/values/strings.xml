@@ -2,17 +2,45 @@
 <resources>
 
     <string name="app_name">ListBoostDemo</string>
-    <string name="title_task_detail">Task Detail</string>
 
-    <string-array name="list_examples">
-        <item>Sliding Menu List</item>
-        <item>Sliding Menu Expandable List</item>
-        <item>Swipe to Reveal List</item>
-        <item>Swipe to Reveal Expandable List</item>
-        <item>Multiple Choice List</item>
-        <item>Multiple Choice Expandable List</item>
-        <item>Drag and Drop Sort List</item>
-        <item>Drag and Drop Sort Expandable List</item>
+    <!-- List Features -->
+    <string name="swipe">Swipe to Reveal</string>
+    <string name="slide">Sliding Item Menu</string>
+    <string name="multichoice">Multiple Choice</string>
+    <string name="dragdrop">Drag and Drop</string>
+    <string name="list_features">Features</string>
+
+    <!-- Welcome Message -->
+    <string name="welcome">Welcome to the ListBoost Demo app. To get started, first choose the type of list (ListView or ExpandableListView)you would like to demo. Then, check each feature you would like your demo list to implement. Once you are happy with your list type and feature set, tap the Start Demo button.</string>
+
+    <!-- List Types -->
+    <string name="listview">ListView</string>
+    <string name="expandablelistview">ExpandableListView</string>
+    <string name="list_type">List Type</string>
+
+    <!-- Other -->
+    <string name="demo_list_creator">Demo List Creator</string>
+    <string name="start_demo">Start Demo</string>
+
+    <!-- MultiChoice -->
+    <string name="choice_mode_options">Choice Mode Options</string>
+    <string name="only_one_item">Only One Item</string>
+    <string name="group_choice_modes_label">Group Choice Modes</string>
+    <string name="child_choice_modes">Child Choice Modes</string>
+
+    <string-array name="group_choice_modes">
+        <item>Multi</item>
+        <item>One</item>
+        <item>None</item>
     </string-array>
+    <string-array name="child_choice_modes">
+        <item>Multi</item>
+        <item>One Per Group</item>
+        <item>One</item>
+        <item>None</item>
+    </string-array>
+
+    <string name="group_mode">Group Mode</string>
+    <string name="child_mode">Child Mode</string>
 
 </resources>
