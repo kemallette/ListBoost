@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    
+ 	<item name="view_holder_key" type="id"/>
+    
+    <item name="checkable_tag_key" type="id"/>
+    
     <item name="slide_toggle_button" type="id"/>
     <item name="sliding_view_id" type="id"/>
 

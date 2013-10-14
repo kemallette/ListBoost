@@ -20,8 +20,6 @@ public class ExamplesListActivity	extends
 
 		initListFrag();
 	}
-
-
 	private void initListFrag(){
 
 		FragmentTransaction mTransaction = getSupportFragmentManager().beginTransaction();

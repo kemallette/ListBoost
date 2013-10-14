@@ -2,92 +2,105 @@ package com.kemallette.ListBoost.ExpandableList;
 
 
 import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashMap;
+import java.util.List;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.widget.CompoundButton;
+import android.util.SparseArray;
+import android.util.SparseBooleanArray;
+import android.view.View;
+import android.widget.Checkable;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 
+import com.kemallette.ListBoost.R;
+import com.kemallette.ListBoost.ExpandableList.BoostExpandableListAdapter.Holder;
 
-public class BoostExpandableListView extends
-									ExpandableListView	implements
-														ExpandableListCheckListener,
-														MultiLevelCheckable{
+public class BoostExpandableListView	extends
+											ExpandableListView	implements
+																BoostExpandableList, ExpandableListCheckListener{
 
-
-	private static final String						TAG								=
-																						"BoostExpandableListView";
-
-	public static final int							CHECK_MODE_NONE					=
-																						10;
-	public static final int							CHECK_MODE_MULTI				=
-																						12;
-
-	public static final int							GROUP_CHECK_MODE_ONE			=
-																						11;
-	/**
-	 * Only one child out of the entire list can be checked at one time. You
-	 * cannot use this and set checkChildrenOnGroupCheck true
-	 */
-	public static final int							CHILD_CHECK_MODE_ONE			=
-																						13;
-	/**
-	 * Only one child item per group can be checked at a time. You cannot use
-	 * this and set checkChidrenOnGroupCheck true.
-	 */
-	public static final int							CHILD_CHECK_MODE_ONE_PER_GROUP	=
-																						14;
-
-	public static final int							GROUP_INDICATOR_LEFT			= 0,
-		GROUP_INDICATOR_RIGHT = 1, GROUP_INDICATOR_NONE = 2;
-
-	private boolean									checkChildrenOnGroupCheck		=
-																						false;
-
-
-	private int										groupCheckMode					=
-																						CHECK_MODE_NONE;
-	private int										childCheckMode					=
-																						CHECK_MODE_NONE;
-
-	private int										groupCheckTotal,
-													childCheckTotal;
-
-	private int										groupIndicatorPosition			=
-																						GROUP_INDICATOR_LEFT;
-
-	private ArrayList<ExpandableListCheckListener>	mCheckListeners;
+	private static final String				TAG						= "BoostExpandableListView";
 
 
 	/**
-	 * 
+	 * Flag indicating if an item's checked state change is from a user actually
+	 * touching the screen
 	 */
-	private BitSet									mCheckedGroups;
-	private HashMap<Integer, BitSet>				mCheckedChildren;
+	private boolean							ignoreCheckChange		= false;
+	private boolean							isOneItemChoice			= false;
+	private boolean							isChoiceOn				= true;
+	/**
+	 * If true, on a group check change, that group's children will match the
+	 * group's check state. In other words, if you check a group, all its
+	 * children will also be checked and the reverse. If a group is unchecked,
+	 * all its children will be unchecked.
+	 */
+	private boolean							checkChildrenWithGroup	= false;
 
-	private BaseBoostExpandableAdapter				mAdapter;
+
+	private int								groupChoiceMode			= CHECK_MODE_MULTI;
+	private int								childChoiceMode			= CHECK_MODE_MULTI;
+
+	private CheckStateStore					mCheckStore;
+	private ExpandableListCheckListener				mClientCheckListener;
+
+	private BoostExpandableListAdapter	mAdapterWrapper;
 
 
-	public BoostExpandableListView(	Context context,
-									AttributeSet attrs,
-									int defStyle){
+	public BoostExpandableListView(	final Context context,
+											final AttributeSet attrs,
+											final int defStyle){
 
 		super(	context,
 				attrs,
 				defStyle);
 
-		// TODO: set check modes and checkChildrenOnGroupCheck from xml attrs
+		if (attrs != null){
+			TypedArray a = getContext()
+										.obtainStyledAttributes(attrs,
+																R.styleable.BoostExpandableListView,
+																0,
+																0);
+
+			groupChoiceMode = a.getInt(	R.styleable.BoostExpandableListView_groupChoiceMode,
+										CHECK_MODE_MULTI);
+
+			childChoiceMode = a.getInt(	R.styleable.BoostExpandableListView_childChoiceMode,
+										CHECK_MODE_MULTI);
+
+			checkChildrenWithGroup = a.getBoolean(	R.styleable.BoostExpandableListView_checkChildrenWithGroup,
+													false);
+
+			isOneItemChoice = a.getBoolean(	R.styleable.BoostExpandableListView_oneItemChoice,
+											false);
+
+			// default on instantiation is true so if both modes are NONE we
+			// need to set to false
+			if (groupChoiceMode == CHECK_MODE_NONE
+				&& childChoiceMode == CHECK_MODE_NONE)
+				isChoiceOn = false;
+
+
+			if (isOneItemChoice){
+				groupChoiceMode = CHECK_MODE_ONE_ALL;
+				childChoiceMode = CHECK_MODE_ONE_ALL;
+				checkChildrenWithGroup = false;
+				isChoiceOn = true;
+			}
+
+			a.recycle();
+		}
 
 	}
 
 
-	public BoostExpandableListView(	Context context,
-									AttributeSet attrs){
+	public BoostExpandableListView(	final Context context,
+											final AttributeSet attrs){
 
 		this(	context,
 				attrs,
@@ -95,7 +108,7 @@ public class BoostExpandableListView extends
 	}
 
 
-	public BoostExpandableListView(Context context){
+	public BoostExpandableListView(final Context context){
 
 		this(	context,
 				null);
@@ -103,212 +116,652 @@ public class BoostExpandableListView extends
 
 
 	@Override
-	public void onRestoreInstanceState(Parcelable state){
+	public void onRestoreInstanceState(final Parcelable state){
 
 		super.onRestoreInstanceState(state);
 
-		// TODO: restore necessary saved fields
+		// TODO: restore necessary saved fields - remember that super does a few
+		// things too
 	}
 
 
 	@Override
 	public Parcelable onSaveInstanceState(){
 
-		return super.onSaveInstanceState();
+		final Parcelable mParcel = super.onSaveInstanceState();
 
-		// TODO: save all necessary fields
+		// TODO: save all necessary fields - remember that super does a few
+		// things too
+		return mParcel;
 	}
 
 
 	@Override
-	public void onGlobalLayout(){
+	public void setAdapter(final ExpandableListAdapter adapter){
 
-		super.onGlobalLayout();
+		if (adapter == null)
+			throw new NullPointerException("The adapter you passed was null");
 
-		// TODO: Implement group indicator on right/left side or GONE
+
+		if (adapter instanceof BoostExpandableListAdapter)
+			this.mAdapterWrapper = (BoostExpandableListAdapter) adapter;
+
+		else if (mAdapterWrapper == null)
+			mAdapterWrapper = new BoostExpandableListAdapter(	adapter,
+																this);
+		else
+			mAdapterWrapper.setWrappedAdapter(adapter);
+
+		super.setAdapter(mAdapterWrapper);
+
+		mCheckStore = new CheckStateStore(this); // Must do this to ensure
+													// hasStableIds stays
+													// current
 	}
 
 
 	@Override
-	public void setAdapter(ExpandableListAdapter adapter){
+	public ExpandableListAdapter getExpandableListAdapter(){
 
-		super.setAdapter(adapter);
-
-		Log.e(	TAG,
-				"Need to use an adapter that implements BoostExpadable");
+		return mAdapterWrapper.getWrappedAdapter();
 	}
 
 
-	public void setAdapter(BaseBoostExpandableAdapter adapter){
+	@Override
+	public BoostExpandableListAdapter getBoostAdapter(){
 
-		super.setAdapter(adapter);
-
-		mAdapter = adapter;
-
-		((BaseBoostExpandableAdapter) mAdapter).setExpandableCheckListener(this);
+		return mAdapterWrapper;
 	}
 
 
-	private void validateCheckedGroups(){
+	/***********************************************************
+	 * ExpandableListCheckListener Callbacks
+	 ************************************************************/
+	@Override
+	public void onGroupCheckChange(final Checkable checkedView,
+									final int groupPosition,
+									final long groupId,
+									final boolean isChecked){
 
-		if (mCheckedGroups == null){
+		if (isChoiceOn
+			&& !ignoreCheckChange){
 
-			mCheckedGroups = new BitSet(mAdapter.getGroupCount());
-			return;
+			if (groupChoiceMode != CHOICE_MODE_NONE)
+				setGroupCheckedState(	groupPosition,
+										isChecked);
+			else
+				Log.i(	TAG
+							+ "\n onGroupCheckChange",
+						"groupChoice mode is NONE");
 
-		}else if (mCheckedGroups.length() < mAdapter.getGroupCount()){
-
-			BitSet newBitSet = new BitSet(mAdapter.getGroupCount());
-
-			copyBitSet(	mCheckedGroups,
-						newBitSet);
-			mCheckedGroups = newBitSet;
-		}
-
-
-	}
-
-
-	private void validateCheckState(){
-
-		validateCheckedChildren();
-
-		int i = 0;
-		for (BitSet mChildren : mCheckedChildren.values()){
-			if (mChildren.cardinality() == mChildren.length())
-				setGroupChoice(	i,
-								true,
-								true);
-			else if (mChildren.isEmpty())
-				setGroupChoice(	i,
-								false,
-								true);
-			i++;
+			if (mClientCheckListener != null)
+				mClientCheckListener.onGroupCheckChange(checkedView,
+														groupPosition,
+														groupId,
+														isChecked);
 		}
 	}
 
 
-	private void validateCheckedChildren(int groupPosition){
+	@Override
+	public void onChildCheckChange(final Checkable checkedView,
+									final int groupPosition,
+									final long groupId,
+									final int childPosition,
+									final long childId,
+									final boolean isChecked){
 
-		if (mCheckedChildren == null){
-			mCheckedChildren =
-								new HashMap<Integer, BitSet>(mAdapter.getGroupCount());
-			return;
-		}
+		if (isChoiceOn
+			&& !ignoreCheckChange){
 
-		BitSet mChildren = mCheckedChildren.get(groupPosition);
+			if (childChoiceMode != CHOICE_MODE_NONE)
+				setChildCheckedState(	groupPosition,
+										childPosition,
+										isChecked);
+			else
+				Log.i(	TAG
+							+ "\n onChildCheckChange",
+						"childChoice mode is NONE");
 
-		if (mChildren == null){
-			mChildren = new BitSet(mAdapter.getChildrenCount(groupPosition));
-			return;
-		}
-
-		if (mChildren.length() < mAdapter.getChildrenCount(groupPosition)){
-			BitSet copyTo =
-							new BitSet(mAdapter.getChildrenCount(groupPosition));
-			copyBitSet(	mChildren,
-						copyTo);
-			mCheckedChildren.put(	groupPosition,
-									copyTo);
-		}
-
-	}
-
-
-	private void validateCheckedChildren(){
-
-		if (mCheckedChildren == null){
-			mCheckedChildren =
-								new HashMap<Integer, BitSet>(mAdapter.getGroupCount());
-			return;
-		}
-
-		for (int i : mCheckedChildren.keySet())
-			validateCheckedChildren(i);
-	}
-
-
-	private BitSet copyBitSet(BitSet copyFrom, BitSet copyTo){
-
-		int i = copyFrom.nextSetBit(0);
-		while (i > -1){
-
-			copyTo.set(	i,
-						copyFrom.get(i));
-
-			i = copyFrom.nextSetBit(i + 1);
-		}
-
-		return copyTo;
-	}
-
-
-	private void refresh(){
-
-		if (mAdapter != null){
-			mAdapter.notifyDataSetChanged();
-			postInvalidate();
+			if (mClientCheckListener != null)
+				mClientCheckListener.onChildCheckChange(checkedView,
+														groupPosition,
+														groupId,
+														childPosition,
+														childId,
+														isChecked);
 		}
 	}
 
 
-	public int getGroupIndicatorPosition(){
+	/*********************************************************************
+	 * Choice Mode Related
+	 **********************************************************************/
 
-		return groupIndicatorPosition;
+	@Override
+	public BoostExpandableList
+		enableChoice(int groupChoiceMode, int childChoiceMode){
+
+		isOneItemChoice = false;
+		isChoiceOn = true;
+
+		setGroupChoiceMode(groupChoiceMode);
+		setChildChoiceMode(childChoiceMode);
+
+		mAdapterWrapper.enableChoice();
+
+		refreshVisibleItems();
+		return this;
 	}
 
 
-	public BoostExpandableListView
-		setGroupIndicatorPosition(int groupIndicatorPosition){
+	@Override
+	public BoostExpandableList disableChoice(){
 
-		if (groupIndicatorPosition > GROUP_INDICATOR_NONE
-			|| groupIndicatorPosition < GROUP_INDICATOR_LEFT)
-			Log.e(	TAG,
-					"setGroupIndicatorPosition(groupIndicatorPosition) failed. groupIndicatorPosition: "
-						+ groupIndicatorPosition
-						+ " is not valid.");
+		isChoiceOn = false;
+		isOneItemChoice = false;
 
-		this.groupIndicatorPosition = groupIndicatorPosition;
+		groupChoiceMode = CHOICE_MODE_NONE;
+		childChoiceMode = CHOICE_MODE_NONE;
+
+		mAdapterWrapper.disableChoice();
+
+		refreshVisibleItems();
+		return this;
+	}
+
+
+	@Override
+	public boolean isChoiceOn(){
+
+		return isChoiceOn;
+	}
+
+
+	@Override
+	public BoostExpandableList setGroupChoiceMode(final int choiceMode){
+
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\nsetGroupChoiceMode",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return this;
+		}
+
+		groupChoiceMode = choiceMode;
+
+		if (choiceMode != CHECK_MODE_MULTI)
+			clearGroups();
+
+		if (choiceMode == CHOICE_MODE_NONE
+			|| choiceMode == CHOICE_MODE_MULTIPLE)
+			refreshVisibleItems();
 
 		return this;
 	}
 
 
-	public int getGroupCheckMode(){
+	@Override
+	public BoostExpandableList setChildChoiceMode(final int choiceMode){
 
-		return groupCheckMode;
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\nsetChildChoiceMode",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return this;
+		}
+
+		childChoiceMode = choiceMode;
+
+		if (choiceMode != CHECK_MODE_MULTI)
+			clearChildren();
+
+		if (choiceMode == CHOICE_MODE_NONE
+			|| choiceMode == CHOICE_MODE_MULTIPLE)
+			refreshVisibleItems();
+
+		return this;
 	}
 
 
-	public BoostExpandableListView setGroupCheckMode(int groupCheckMode){
+	@Override
+	public BoostExpandableList
+		checkChildrenWithGroup(final boolean checkChildrenWithGroup){
 
-		this.groupCheckMode = groupCheckMode;
+		if (!isChoiceOn){
 
-		if (groupCheckMode != CHECK_MODE_NONE
-			&& mCheckedGroups == null)
-			mCheckedGroups = new BitSet(mAdapter.getGroupCount());
+			Log.e(	TAG
+						+ "\n checkChildrenWithGroup",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return this;
+		}
+
+		this.checkChildrenWithGroup = checkChildrenWithGroup;
 
 		return this;
 	}
 
 
-	public int getChildCheckMode(){
+	@Override
+	public boolean checkChildrenWithGroup(){
 
-		return childCheckMode;
+		return checkChildrenWithGroup;
 	}
 
 
-	public BoostExpandableListView setChildCheckMode(int childCheckMode){
+	/*
+	 * Enables one item choice mode. Only one item at a time throughout the list
+	 * (including groups and children) can be checked. isChoiceOn() will return
+	 * true.
+	 * 
+	 * If checkChildrenWithGroup is enabled, it will be disabled until
+	 * checkChildrenWithGroup is set to true again.
+	 */
+	@Override
+	public BoostExpandableList enableOnlyOneItemChoice(){
 
-		this.childCheckMode = childCheckMode;
+		isOneItemChoice = true;
+		isChoiceOn = true;
 
-		if (childCheckMode != CHECK_MODE_NONE
-			&& mCheckedChildren == null)
-			mCheckedChildren = new HashMap<Integer, BitSet>();
+		checkChildrenWithGroup = false;
+
+		groupChoiceMode = CHECK_MODE_ONE_ALL;
+		childChoiceMode = CHECK_MODE_ONE_ALL;
+
+		mAdapterWrapper.enableChoice();
+
+		clearAll();
 
 		return this;
 	}
 
+
+	/*
+	 * This disables one item choice mode. isChoiceOn() will return false until
+	 * either enableChoice(int groupChoiceMode, int childChoiceMode) or
+	 * enableOnlyOneItemChoice() are called.
+	 */
+	@Override
+	public BoostExpandableList disableOnlyOneItemChoice(){
+
+		isOneItemChoice = false;
+		isChoiceOn = false;
+
+		groupChoiceMode = CHOICE_MODE_NONE;
+		childChoiceMode = CHOICE_MODE_NONE;
+
+		mAdapterWrapper.disableChoice();
+
+		refreshVisibleItems();
+		return this;
+	}
+
+
+	@Override
+	public boolean isOneItemChoiceOn(){
+
+		return isOneItemChoice;
+	}
+
+
+	@Override
+	public int getGroupChoiceMode(){
+
+		return groupChoiceMode;
+	}
+
+
+	@Override
+	public int getChildChoiceMode(){
+
+		return childChoiceMode;
+	}
+
+
+	/*********************************************************************
+	 * Internal utils
+	 **********************************************************************/
+
+	protected void refreshVisibleItems(){
+
+		View listItem;
+		Holder mHolder;
+
+		Checkable checkableView;
+		Bundle mCheckableData;
+
+		final int firstVis = getFirstVisiblePosition();
+		final int lastVis = getLastVisiblePosition();
+		int count = lastVis
+					- firstVis;
+
+		while (count >= 0){ // looping through visible list items which
+							// are the only items that will need to be
+							// refreshed. The adapter's getView will
+							// take care of all non-visible items when
+							// the list is scrolled
+
+			listItem = getChildAt(count);
+
+			if (listItem != null){
+
+				mHolder = (Holder) listItem.getTag(R.id.view_holder_key);
+				checkableView = mHolder.mBox;
+				mCheckableData = mHolder.getBoxData();
+
+				if (!mCheckableData.isEmpty()
+					&& mCheckableData.containsKey(BoostExpandableListAdapter.IS_GROUP))
+
+					if (mCheckableData.getBoolean(BoostExpandableListAdapter.IS_GROUP))
+						refreshVisibleGroup(listItem,
+											checkableView,
+											mCheckableData);
+					else
+						refreshVisibleChild(listItem,
+											checkableView,
+											mCheckableData);
+
+			}else
+				Log.d(	TAG
+							+ "\n refreshVisibleCheckableViews",
+						"getChildAt didn't retrieve a non-null view");
+
+
+			count--;
+		}
+
+	}
+
+
+	protected void refreshVisibleGroup(final View listItem,
+										final Checkable checkView,
+										final Bundle mCheckableData){
+
+		if (isChoiceOn
+			&& getGroupChoiceMode() != CHECK_MODE_NONE){
+
+			final int groupPosition = mCheckableData.getInt(BoostExpandableListAdapter.GROUP_POSITION,
+															-1);
+
+			enableCheckable(checkView);
+
+
+			ignoreCheckChange = true;
+			if (groupPosition > -1)
+				checkView.setChecked(isGroupChecked(groupPosition));
+			else
+				checkView.setChecked(false);
+			ignoreCheckChange = false;
+
+		}else
+			disableCheckable(checkView);
+	}
+
+
+	protected void refreshVisibleChild(final View listItem,
+										final Checkable checkView,
+										final Bundle mCheckableData){
+
+		if (isChoiceOn
+			&& getChildChoiceMode() != CHECK_MODE_NONE){
+
+			final int groupPosition = mCheckableData.getInt(BoostExpandableListAdapter.GROUP_POSITION,
+															-1);
+			final int childPosition = mCheckableData.getInt(BoostExpandableListAdapter.CHILD_POSITION,
+															-1);
+
+			enableCheckable(checkView);
+
+
+			ignoreCheckChange = true;
+
+			if (childPosition > -1
+				&& groupPosition > -1)
+				checkView.setChecked(isChildChecked(groupPosition,
+													childPosition));
+			else
+				checkView.setChecked(false);
+
+			ignoreCheckChange = false;
+
+		}else
+			disableCheckable(checkView);
+	}
+
+
+	private void enableCheckable(Checkable checkableView){
+
+		((View) checkableView).setVisibility(View.VISIBLE);
+	}
+
+
+	private void disableCheckable(Checkable checkableView){
+
+		((View) checkableView).setVisibility(View.INVISIBLE);
+	}
+
+
+	/*********************************************************************
+	 * Public utils
+	 **********************************************************************/
+
+	/**
+	 * This will return the group position for a groupId.
+	 * 
+	 * <b>Caution:</b> This has to loop through all group items in the list
+	 * which could raise performance issues
+	 * 
+	 * @param groupId
+	 *            - id for the group you want a position for
+	 * @return group position in the list or a negative number if one was not
+	 *         found
+	 */
+	public int getGroupPosition(final long groupId){
+
+		// loop through group positions to match groupId
+		for (int i = 0; i < getExpandableListAdapter()
+														.getGroupCount(); i++)
+			if (getExpandableListAdapter()
+											.getGroupId(i) == groupId)
+				return i;
+
+		return -1;
+	}
+
+
+	/**
+	 * This will find the child position within the a group at groupPosition
+	 * who's id matches childId.
+	 * 
+	 * <b>Caution:</b> This has to loop through all of this groups child items
+	 * which could raise performance issues
+	 * 
+	 * @param groupPosition
+	 *            - the group position the child falls under
+	 * @param childId
+	 * @return the child's position within the group at groupPosition or a
+	 *         negative number if one was not found
+	 */
+	public int getChildPosition(final int groupPosition, final long childId){
+
+		// loop through group's child positions to match child id
+		for (int i = 0; i < getExpandableListAdapter()
+														.getChildrenCount(groupPosition); i++)
+			if (getExpandableListAdapter()
+											.getChildId(groupPosition,
+														i) == childId)
+				return i;
+
+		return -1;
+	}
+
+
+	/**
+	 * This is a convenience for to avoid having to call getGroupPosition(long
+	 * groupId) and getChildPosition(int groupPosition, long childId).
+	 * 
+	 * <b>Caution:</b> These methods have to loop through all of this groups
+	 * child items which could raise performance issues
+	 * 
+	 * @param groupId
+	 *            - id of the group the child falls under
+	 * @param childId
+	 * @return the child's position within the group with the specified groupId
+	 *         or a negative number if one was not found
+	 */
+	public int getChildPosition(final long groupId, final long childId){
+
+		final int groupPosition = getGroupPosition(groupId);
+
+		if (!(groupPosition < 0))
+			return getChildPosition(groupPosition,
+									childId);
+
+		return -1;
+	}
+
+
+	/*********************************************************************
+	 * Group and Child check state getters/setters
+	 **********************************************************************/
+	@Override
+	public BoostExpandableList
+		setGroupCheckedState(final int groupPosition,
+								final boolean isChecked){
+
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\nsetGroupCheckedState",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+			return this;
+		}
+
+		if (isOneItemChoice){
+
+			clearAll();
+
+			if (checkChildrenWithGroup)
+				Log.e(	TAG
+							+ "\nsetGroupCheckedState",
+						"One Item Choice Mode is on, but checkChildrenWithGroup is true. ");
+		}
+
+		switch(groupChoiceMode){
+
+			case CHECK_MODE_NONE:
+				return this;
+
+			case CHECK_MODE_ONE:
+				clearGroups();
+				break;
+		}
+
+
+		mCheckStore.setGroupState(	groupPosition,
+									isChecked,
+									checkChildrenWithGroup);
+
+		refreshVisibleItems();
+
+		return this;
+	}
+
+
+	@Override
+	public BoostExpandableList
+		setChildCheckedState(final int groupPosition,
+								final int childPosition,
+								final boolean isChecked){
+
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\nsetChildCheckedState",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+			return this;
+		}
+
+
+		if (isOneItemChoice){
+
+			clearAll();
+
+			if (checkChildrenWithGroup)
+				Log.e(	TAG
+							+ "\nsetChildCheckedState",
+						"One Item Choice Mode is on, but checkChildrenWithGroup is true. ");
+		}
+
+		switch(childChoiceMode){
+
+			case CHECK_MODE_NONE:
+				return this;
+
+			case CHECK_MODE_ONE:
+				clearChildren();
+				break;
+
+			case CHILD_CHECK_MODE_ONE_PER_GROUP:
+				clearChildren(groupPosition);
+				break;
+		}
+
+		mCheckStore.setChildState(	groupPosition,
+									childPosition,
+									isChecked);
+
+		refreshVisibleItems();
+
+		return this;
+	}
+
+
+	/*********************************************************************
+	 * Checked State
+	 **********************************************************************/
+	@Override
+	public boolean isGroupChecked(final int groupPosition){
+
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\nisGroupChecked",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return false;
+		}
+
+		return mCheckStore.isGroupChecked(groupPosition);
+	}
+
+
+	@Override
+	public boolean isChildChecked(final int groupPosition,
+									final int childPosition){
+
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\nisChildChecked",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return false;
+		}
+
+		return mCheckStore.isChildChecked(	groupPosition,
+											childPosition);
+	}
+
+
+	/*********************************************************************
+	 * Checked Item Counts
+	 **********************************************************************/
 
 	/**
 	 * Gives a count of ALL checked items in the list (groups and children
@@ -319,6 +772,16 @@ public class BoostExpandableListView extends
 	@Override
 	public int getCheckedItemCount(){
 
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\n"
+						+
+						"getCheckedItemCount",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return 0;
+		}
 
 		return getCheckedGroupCount()
 				+ getCheckedChildCount();
@@ -333,13 +796,17 @@ public class BoostExpandableListView extends
 	@Override
 	public int getCheckedGroupCount(){
 
-		if (mCheckedGroups != null){
-			validateCheckedGroups();
-			groupCheckTotal = mCheckedGroups.cardinality();
-		}else
-			groupCheckTotal = 0;
+		if (!isChoiceOn){
 
-		return groupCheckTotal;
+			Log.e(	TAG
+						+ "\n"
+						+ "getCheckedGroupCount",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return 0;
+		}
+
+		return mCheckStore.getCheckedGroupCount();
 	}
 
 
@@ -352,15 +819,17 @@ public class BoostExpandableListView extends
 	@Override
 	public int getCheckedChildCount(){
 
-		childCheckTotal = 0;
+		if (!isChoiceOn){
 
-		validateCheckedChildren();
+			Log.e(	TAG
+						+ "\n"
+						+ "getCheckedChildCount",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
 
-		if (mCheckedChildren != null)
-			for (BitSet mChildren : mCheckedChildren.values())
-				childCheckTotal += mChildren.cardinality();
+			return 0;
+		}
 
-		return childCheckTotal;
+		return mCheckStore.getCheckedChildCount();
 	}
 
 
@@ -375,87 +844,179 @@ public class BoostExpandableListView extends
 	 *         groupPosition
 	 */
 	@Override
-	public int getCheckedChildCount(int groupPosition){
+	public int getCheckedChildCount(final int groupPosition){
 
-		if (mCheckedChildren != null){
+		if (!isChoiceOn){
 
-			validateCheckedChildren(groupPosition);
+			Log.e(	TAG
+						+ "\n"
+						+ "getCheckedChildCount(groupPosition)",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
 
-			BitSet mChildren = mCheckedChildren.get(groupPosition);
-			if (mChildren != null)
-				return mChildren.cardinality();
-			else
-				return -1;
+			return 0;
+		}
 
-		}else
-			return -1;
-
+		return mCheckStore.getCheckedChildCount(groupPosition);
 	}
 
+
+	/*********************************************************************
+	 * Checked Item id/position getters
+	 **********************************************************************/
+
+	@Override
+	public long[] getCheckedGroupIds(){
+
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\n"
+						+ "getCheckedGroupIds",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return new long[0];
+		}
+		return mCheckStore.getCheckedGroupIds();
+	}
+
+
+	@Override
+	public List<Long> getCheckedChildIds(){
+
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\n"
+						+ "getCheckedChildIds",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return new ArrayList<Long>();
+		}
+		return mCheckStore.getCheckedChildIds();
+	}
+
+
+	@Override
+	public List<Long> getCheckedChildIds(final int groupPosition){
+
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\n getCheckedChildIds",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return new ArrayList<Long>();
+		}
+		return mCheckStore.getCheckedChildIds(groupPosition);
+	}
+
+
+	@Override
+	public int[] getCheckedGroupPositions(){
+
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\n getCheckedGroupPositions",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return new int[0];
+		}
+		return mCheckStore.getCheckedGroupPositions();
+	}
+
+
+	@Override
+	public SparseArray<int[]> getCheckedChildPositions(){
+
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\n getCheckedChildPositions",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return new SparseArray<int[]>();
+		}
+		return mCheckStore.getCheckedChildPositions();
+	}
+
+
+	@Override
+	public int[] getCheckedChildPositions(final int groupPosition){
+
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\n getCheckedChildPositions(groupPosition)",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return new int[0];
+		}
+		return mCheckStore.getCheckedChildPositions(groupPosition);
+	}
+
+
+	/*********************************************************************
+	 * Clearing
+	 **********************************************************************/
 
 	/**
 	 * Clears all checked items in the list and resets the all checked counts.
 	 */
 	@Override
-	public void clearChoices(){
+	public BoostExpandableList clearAll(){
 
-		if (mCheckedChildren != null)
-			mCheckedChildren.clear();
+		if (!isChoiceOn){
 
-		if (mCheckedGroups != null)
-			mCheckedGroups.clear();
+			Log.e(	TAG
+						+ "\n clearAll",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
 
-		groupCheckTotal = 0;
-		childCheckTotal = 0;
-
-		refresh();
-	}
-
-
-	/**
-	 * Clears all checked groups in the list.
-	 * 
-	 * Caution: if you set checkChildrenOnGroupCheck to true, all checked
-	 * children under the checked parent groups will be cleared as well.
-	 */
-	public void clearGroupChoices(){
-
-		validateCheckedGroups();
-
-		int gPos = mCheckedGroups.nextSetBit(0);
-
-		while (mCheckedGroups.nextSetBit(gPos) > -1){
-
-			if (checkChildrenOnGroupCheck)
-				clearGroupChildChoices(gPos);
-
-			gPos = mCheckedGroups.nextSetBit(gPos + 1);
+			return this;
 		}
+		mCheckStore.clearAll();
 
-		mCheckedGroups.clear();
+		refreshVisibleItems();
 
-		groupCheckTotal = 0;
-
-		refresh();
+		return this;
 	}
 
 
-	/**
-	 * Clears all checked children in the list.
-	 * 
-	 * Caution: if you set checkChildrenOnGroupCheck to true, groups with all
-	 * children checked will also be cleared.
-	 */
-	public void clearChildChoices(){
+	@Override
+	public BoostExpandableList clearGroups(){
 
-		validateCheckedChildren();
+		if (!isChoiceOn){
 
-		for (BitSet mChildrenSet : mCheckedChildren.values())
-			mChildrenSet.clear();
+			Log.e(	TAG
+						+ "\n clearGroups",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
 
-		childCheckTotal = 0;
+			return this;
+		}
+		mCheckStore.clearGroups(checkChildrenWithGroup);
 
-		validateCheckState();
+		refreshVisibleItems();
+
+		return this;
+	}
+
+
+	@Override
+	public BoostExpandableList clearChildren(){
+
+		if (!isChoiceOn){
+
+			Log.e(	TAG
+						+ "\n clearChildren",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
+
+			return this;
+		}
+		mCheckStore.clearChildren();
+
+		refreshVisibleItems();
+
+		return this;
 	}
 
 
@@ -464,398 +1025,174 @@ public class BoostExpandableListView extends
 	 * groupPosition.
 	 * 
 	 * @param groupPosition
-	 *            - the position in the list of the parent group from which you
-	 *            want to clear checked children.
+	 *            - the group position for the children you want to clear
 	 */
-	public void clearGroupChildChoices(int groupPosition){
+	@Override
+	public BoostExpandableList
+		clearChildren(final int groupPosition){
 
-		validateCheckedChildren(groupPosition);
+		if (!isChoiceOn){
 
-		BitSet mChildren = mCheckedChildren.get(groupPosition);
+			Log.e(	TAG
+						+ "\n clearChildren(groupPosition)",
+					"Choice is not enabled. Try using enableChoice(groupChoiceMode, childChoiceMode) or enableOnlyOneItemChoice()");
 
-		if (mChildren != null)
-			mChildren.clear();
-
-		if (checkChildrenOnGroupCheck)
-			setGroupChoice(	groupPosition,
-							false,
-							true);
-	}
-
-
-	public Long[] getCheckedGroupIds(){
-
-
-		if (groupCheckMode != CHECK_MODE_NONE
-			&& mCheckedGroups != null){
-
-			ArrayList<Long> mGroupIds = new ArrayList<Long>();
-			int groupPos = mCheckedGroups.nextSetBit(0);
-
-			while (groupPos > -1){
-
-				mGroupIds.add(mAdapter.getGroupId(groupPos));
-				groupPos = mCheckedGroups.nextSetBit(groupPos + 1);
-			}
-
-			return (Long[]) mGroupIds.toArray();
-
-		}else
-			Log.e(	TAG,
-					"Can't get checked group item positions because group check mode is CHECK_MODE_NONE or mCheckedGroups is null");
-
-		return null;
-	}
-
-
-	public Long[] getCheckedChildIds(int groupPosition){
-
-		if (childCheckMode != CHECK_MODE_NONE
-			&& mCheckedChildren != null){
-
-			BitSet mChildren = mCheckedChildren.get(groupPosition);
-
-			if (!mChildren.isEmpty()){
-
-				ArrayList<Long> mChildIds = new ArrayList<Long>();
-
-				int childPos = mChildren.nextSetBit(0);
-
-				while (childPos > -1){
-
-					mChildIds.add(mAdapter.getChildId(	groupPosition,
-														childPos));
-					childPos = mChildren.nextSetBit(childPos + 1);
-				}
-
-				return (Long[]) mChildIds.toArray();
-			}
-
-		}else
-			Log.e(	TAG,
-					"Can't get checked child item positions because child check mode is CHECK_MODE_NONE or mCheckedChildren is null");
-
-		return null;
-	}
-
-
-	public int getCheckedGroupPosition(){
-
-		if (groupCheckMode == GROUP_CHECK_MODE_ONE){
-
-			if (mCheckedGroups != null)
-				return mCheckedGroups.nextSetBit(0);
-		}else
-			Log.e(	TAG,
-					"Can't get checked group item position because group check mode is not GROUP_CHECK_MODE_ONE");
-
-		return -1;
-	}
-
-
-	/**
-	 * This checks for the single checked child. This method is ONLY for use if
-	 * childCheckMode is CHILD_CHECK_MODE_ONE
-	 * 
-	 * @return int[] containing {groupPosition, childPosition}
-	 */
-	public int[] getCheckedChildPosition(){
-
-		if (childCheckMode == CHILD_CHECK_MODE_ONE){
-			if (mCheckedChildren != null){
-
-				BitSet mChildren;
-				int childPos = 0;
-				for (Integer checkedGroup : mCheckedChildren.keySet()){
-
-					mChildren = mCheckedChildren.get(checkedGroup);
-
-					if (mChildren != null){
-						childPos = mChildren.nextSetBit(0);
-						if (childPos > -1)
-							return new int[] {	checkedGroup,
-												childPos };
-					}
-				}
-			}
-
-		}else
-			Log.e(	TAG,
-					"Can't get checked child item position because group child mode is not CHILD_CHECK_MODE_ONE");
-		return null;
-	}
-
-
-	/**
-	 * @param groupPos
-	 * @return checked child position in group at groupPosition
-	 */
-	public int getCheckedChildPosition(int groupPosition){
-
-		if (childCheckMode != CHILD_CHECK_MODE_ONE_PER_GROUP
-			&& mCheckedChildren != null){
-
-			BitSet mChildren = mCheckedChildren.get(groupPosition);
-			if (mChildren != null)
-				return mChildren.nextSetBit(0);
-		}else
-			Log.e(	TAG,
-					"Can't get checked child item position because group child mode is not CHILD_CHECK_MODE_ONE_PER_GROUP");
-		return -1;
-	}
-
-
-	public boolean isGroupChecked(int groupPosition){
-
-		if (mCheckedGroups != null)
-			return mCheckedGroups.get(groupPosition);
-
-		return false;
-	}
-
-
-	public boolean isChildChecked(int groupPosition, int childPosition){
-
-		if (mCheckedChildren != null){
-
-			BitSet mBitSet = mCheckedChildren.get(groupPosition);
-
-			if (mBitSet != null)
-				return mBitSet.get(childPosition);
-		}
-
-		return false;
-	}
-
-
-	public BoostExpandableListView setGroupChoice(int groupPosition,
-													boolean isChecked,
-													boolean refreshList){
-
-		if (groupCheckMode == CHECK_MODE_NONE){
-			Log.w(	TAG,
-					"Can't set group checked without enabling a group check mode.");
 			return this;
 		}
+		mCheckStore.clearChildren(groupPosition);
 
-		validateCheckedGroups();
-
-		if (mCheckedGroups == null)
-			mCheckedGroups = new BitSet(mAdapter.getGroupCount());
-
-		if (isChecked != mCheckedGroups.get(groupPosition))
-			// statechange
-			// hasn't been
-			// recorded
-			if (isChecked){
-
-				if (groupCheckMode == GROUP_CHECK_MODE_ONE){// Only one
-															// group at a
-															// time.
-					if (checkChildrenOnGroupCheck)
-						clearGroupChoices();
-
-					mCheckedGroups.clear();
-				}
-
-				mCheckedGroups.set(groupPosition);
-
-			}else
-				// Not checked and hasn't been recorded
-				mCheckedGroups.clear(groupPosition);
-
-		if (checkChildrenOnGroupCheck
-			&& childCheckMode == CHECK_MODE_MULTI)
-			setGroupChildrenChoices(groupPosition,
-									isChecked,
-									refreshList);
-		else
-			Log.w(	TAG,
-					"Can't have both child_check_mode_one or one per group "
-						+ "and checkChildrenOnGroupCheck true simultaneously.");
-
-		if (refreshList)
-			refresh();
-
-		return this;
-	}
-
-
-	public BoostExpandableListView setChildChoice(int groupPosition,
-													int childPosition,
-													boolean isChecked,
-													boolean refreshList){
-
-
-		if (childCheckMode == CHECK_MODE_NONE)
-			Log.w(	TAG,
-					"Can't set group checked without enabling a child check mode.");
-
-		validateCheckedChildren(groupPosition);
-
-		if (childCheckMode == CHILD_CHECK_MODE_ONE_PER_GROUP)
-			clearGroupChildChoices(groupPosition);
-		else if (childCheckMode == CHILD_CHECK_MODE_ONE)
-			clearChildChoices();
-
-		BitSet mBs = null;
-
-		if (mCheckedChildren != null)
-			mBs = mCheckedChildren.get(groupPosition);
-		else
-			mCheckedChildren = new HashMap<Integer, BitSet>();
-
-		if (mBs == null)
-			mBs = new BitSet(mAdapter.getChildrenCount(groupPosition));
-
-		if (mBs.get(childPosition) != isChecked)
-			mBs.set(childPosition,
-					isChecked);
-
-		if (refreshList)
-			refresh();
-
-		return this;
-	}
-
-
-	public BoostExpandableListView
-		setGroupChildrenChoices(int groupPosition,
-								boolean isChecked,
-								boolean refreshList){
-
-		if (childCheckMode == CHECK_MODE_NONE
-			|| childCheckMode == CHILD_CHECK_MODE_ONE
-			|| childCheckMode == CHILD_CHECK_MODE_ONE_PER_GROUP){
-			if (isChecked)
-				Log.e(	TAG,
-						"You must set childCheckMode to CHECK_MODE_MULTI to set more than one child per group");
-			return this;
-		}
-
-		validateCheckedGroups();
-		validateCheckedChildren(groupPosition);
-
-		if (mCheckedChildren == null){
-
-			if (!isChecked)
-				return this;
-
-			mCheckedChildren =
-								new HashMap<Integer, BitSet>(mAdapter.getGroupCount());
-		}
-
-		BitSet checkedChildren = mCheckedChildren.get(groupPosition);
-		if (checkedChildren == null){
-
-			if (!isChecked)
-				return this;
-
-			checkedChildren =
-								new BitSet(mAdapter.getChildrenCount(groupPosition));
-			mCheckedChildren.put(	groupPosition,
-									checkedChildren);
-		}
-
-		if (isChecked)
-			checkedChildren.set(0,
-								checkedChildren.length(),
-								true);
-		else
-			checkedChildren.set(0,
-								checkedChildren.length(),
-								false);
-
-		if (checkChildrenOnGroupCheck){
-			if (mCheckedGroups == null)
-				mCheckedGroups = new BitSet(mAdapter.getGroupCount());
-			mCheckedGroups.set(	groupPosition,
-								isChecked);
-		}
-
-		if (refreshList)
-			refresh();
-
-		return this;
-	}
-
-
-	public BoostExpandableListView
-		setCheckChildrenOnGroupCheck(boolean checkChildrenOnGroupCheck){
-
-		this.checkChildrenOnGroupCheck = checkChildrenOnGroupCheck;
+		refreshVisibleItems();
 
 		return this;
 	}
 
 
 	/***********************************************************
-	 * 
-	 * Register/Undregister client ExpandableListChecklisteners
-	 * 
-	 ************************************************************/
-	public boolean
-		registerExpandableCheckListener(ExpandableListCheckListener listener){
-
-		if (mCheckListeners == null)
-			mCheckListeners = new ArrayList<ExpandableListCheckListener>();
-
-		return mCheckListeners.add(listener);
-	}
-
-
-	public boolean
-		unregisterExpandableCheckListener(ExpandableListCheckListener listener){
-
-		if (mCheckListeners == null)
-			return false;
-		else
-			return mCheckListeners.remove(listener);
-	}
-
-
-	/***********************************************************
-	 * 
-	 * MultiLevelCheckable Callbacks
-	 * 
+	 * Get/Set/Remove ExpandableListCheckListener
 	 ************************************************************/
 	@Override
-	public void onGroupCheckChange(CompoundButton checkBox,
-									int groupPosition,
-									long groupId,
-									boolean isChecked){
+	public BoostExpandableList
+		setExpandableCheckListener(
+									final ExpandableListCheckListener listener){
 
-		setGroupChoice(	groupPosition,
-						isChecked,
-						false);
-
-		for (ExpandableListCheckListener mListener : mCheckListeners)
-			mListener.onGroupCheckChange(	checkBox,
-											groupPosition,
-											groupId,
-											isChecked);
-
+		mClientCheckListener = listener;
+		return this;
 	}
 
 
 	@Override
-	public void onChildCheckChange(CompoundButton checkBox,
-									int groupPosition,
-									int childPosition,
-									long childId,
-									boolean isChecked){
+	public BoostExpandableList
+		removeExpandableCheckListener(){
 
-		setChildChoice(	groupPosition,
-						childPosition,
-						isChecked,
-						false);
+		mClientCheckListener = null;
 
-		for (ExpandableListCheckListener mListener : mCheckListeners)
-			mListener.onChildCheckChange(	checkBox,
-											groupPosition,
-											childPosition,
-											childId,
-											isChecked);
+		return this;
 	}
+
+
+	@Override
+	public ExpandableListCheckListener getExpandableListCheckListener(){
+
+		return mClientCheckListener;
+	}
+
+
+	/*********************************************************************
+	 * Adapter delegates - internal use
+	 **********************************************************************/
+	protected boolean hasStableIds(){
+
+		return mAdapterWrapper.hasStableIds();
+	}
+
+
+	protected long getChildId(final int groupPosition, final int childPosition){
+
+		return mAdapterWrapper.getChildId(	groupPosition,
+											childPosition);
+	}
+
+
+	protected long getGroupId(final int groupPosition){
+
+		return mAdapterWrapper.getGroupId(groupPosition);
+	}
+
+
+	protected int getGroupCount(){
+
+		return mAdapterWrapper.getGroupCount();
+	}
+
+
+	protected int getChildrenCount(final int groupPosition){
+
+		return mAdapterWrapper.getChildrenCount(groupPosition);
+	}
+
+
+	protected long[] getGroupChildrenIds(final int groupPosition){
+
+		long[] ids;
+		final int childCount = getChildrenCount(groupPosition);
+
+		if (hasStableIds()){
+			ids = new long[childCount];
+			for (int i = 0; i < childCount; i++)
+				ids[i] = getChildId(groupPosition,
+									i);
+		}else
+			ids = new long[0];
+
+		return ids;
+	}
+
+
+	/*********************************************************************
+	 * Overrides from underlying ListView and AbsListView
+	 **********************************************************************/
+
+	/*
+	 * For {@link BoostExpandableListView}, use clearAllChoices() instead
+	 */
+	@Override
+	public void clearChoices(){
+
+		Log.w(	TAG,
+				"For BoostExpandableListView, use clearAllChoices() instead of clearChoices()");
+	}
+
+
+	/*
+	 * For {@link BoostExpandableListView}, use getCheckedChildIds or
+	 * getCheckedGroupIds instead.
+	 */
+	@Override
+	public long[] getCheckedItemIds(){
+
+		Log.e(	TAG,
+				"For BoostExpandableListView, use getCheckedChildIds or getCheckedGroupIds instead.");
+		return null;
+	}
+
+
+	/*
+	 * For {@link BoostExpandableListView}, use getCheckedChildPositions
+	 * or getCheckedGroupPositions instead
+	 */
+	@Override
+	public int getCheckedItemPosition(){
+
+		Log.e(	TAG,
+				"For BoostExpandableListView, use getCheckedChildPositions or getCheckedGroupPositions instead");
+		return -1;
+	}
+
+
+	/*
+	 * For {@link BoostExpandableListView}, use getCheckedChildPositions
+	 * or getCheckedGroupPositions instead
+	 */
+	@Override
+	public SparseBooleanArray getCheckedItemPositions(){
+
+		Log.e(	TAG,
+				"For BoostExpandableListView, use getCheckedChildPositions or getCheckedGroupPositions instead");
+		return null;
+	}
+
+
+	/*
+	 * For {@link BoostExpandableListView}, use getGroupChoiceMode or
+	 * getChildChoiceMode instead
+	 */
+	@Override
+	public int getChoiceMode(){
+
+		Log.e(	TAG,
+				"For BoostExpandableListView, use getGroupChoiceMode or getChildChoiceMode instead");
+		return -1;
+	}
+
 
 }

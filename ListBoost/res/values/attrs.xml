@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    
+   <declare-styleable name="BoostExpandableListView">
+       
+       <!-- MultiChoice Options -->
+        <attr name="groupChoiceMode">
+            <enum name="multi" value="2" />
+            <enum name="one" value="1" />
+            <enum name="none" value="0" />
+        </attr>
+        <attr name="childChoiceMode">
+            <enum name="multi" value="2" />
+            <enum name="onePerGroup" value="14" />
+            <enum name="one" value="1" />
+            <enum name="none" value="0" />
+        </attr>
+        <attr name="oneItemChoice" format="boolean" />
+        <attr name="checkChildrenWithGroup" format="boolean" />
+        
+    </declare-styleable>
 
-	<!-- TODO: implement modes
-	<declare-styleable name="SlideExpandableListView">
-		<attr name="mode">
-			<flag name="single" value="0" />
-			<flag name="multiple" value="1" />
-		</attr>
-	</declare-styleable>
-	-->
 </resources>
