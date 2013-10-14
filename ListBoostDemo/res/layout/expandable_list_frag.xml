@@ -14,7 +14,7 @@
             android:id="@+id/choiceOptionsLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#EEE"
+            android:background="#DDD"
             android:padding="5dp"
             android:text="@string/choice_mode_options"
             android:textAppearance="?android:attr/textAppearanceMedium" />

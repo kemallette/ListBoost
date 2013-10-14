@@ -41,7 +41,10 @@ public class MainActivity	extends
 	@Override
 	public void onStartDemo(ListType listType, Bundle mDemoFeatures){
 
-
+		if (listType == ListType.LISTVIEW)
+			launchListFrag(mDemoFeatures);
+		else
+			launchExpandableListFrag(mDemoFeatures);
 	}
 
 
@@ -51,6 +54,7 @@ public class MainActivity	extends
 
 		mTransaction.add(	R.id.container,
 							BuilderFrag.newInstance());
+		mTransaction.addToBackStack(null);
 		mTransaction.commit();
 	}
 
@@ -61,6 +65,7 @@ public class MainActivity	extends
 
 		mTransaction.replace(	R.id.container,
 								BoostExpandableListFragment.newInstance(mFeatures));
+		mTransaction.addToBackStack(null);
 		mTransaction.commit();
 	}
 
@@ -71,6 +76,7 @@ public class MainActivity	extends
 
 		mTransaction.replace(	R.id.container,
 								BoostListFragment.newInstance(mFeatures));
+		mTransaction.addToBackStack(null);
 		mTransaction.commit();
 	}
 

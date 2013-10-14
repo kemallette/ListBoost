@@ -17,7 +17,7 @@
         android:id="@+id/listTypeLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#EEE"
+        android:background="#DDD"
         android:padding="5dp"
         android:text="@string/list_type"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="10dp"
-        android:background="#EEE"
+        android:background="#DDD"
         android:padding="5dp"
         android:text="@string/list_features"
         android:textAppearance="?android:attr/textAppearanceMedium" />
