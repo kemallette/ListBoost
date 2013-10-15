@@ -15,6 +15,7 @@ Major Features Roadmap
   - Sliding list item menus
   - Swipe-to-reveal menus
   - Drag and Drop
+  
 ****
 
 ChangeLog
