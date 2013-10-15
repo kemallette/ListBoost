@@ -6,15 +6,15 @@ Major Features Roadmap
 ----
 
 ####ExpandableListView
-  [ ] Sliding list item menus
-  [ ] Swipe-to-reveal menus
-  [ ] Drag and Drop
-  [x] MultiChoice Modes
+  - [ ] Sliding list item menus
+  - [ ] Swipe-to-reveal menus
+  - [ ] Drag and Drop
+  - [x] MultiChoice Modes
 
 ####ListView
-  [x] Sliding list item menus
-  [ ] Swipe-to-reveal menus
-  [ ] Drag and Drop
+  - [x] Sliding list item menus
+  - [ ] Swipe-to-reveal menus
+  - [ ] Drag and Drop
 ****
 
 ChangeLog
