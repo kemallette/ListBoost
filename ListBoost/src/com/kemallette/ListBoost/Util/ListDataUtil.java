@@ -4,8 +4,8 @@ package com.kemallette.ListBoost.Util;
 import java.util.Arrays;
 import java.util.BitSet;
 
-import android.os.Parcel;
 import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.SparseArrayCompat;
 import android.util.Log;
 
 
@@ -19,7 +19,7 @@ public class ListDataUtil{
 
 		if (longSparseArray == null){
 			Log.e(	TAG,
-					"LongSparseArray lsArray was null!");
+					"LongSparseArray longSparseArray was null!");
 			return new long[0];
 		}
 
@@ -27,9 +27,26 @@ public class ListDataUtil{
 		final int count = array.size();
 		final long[] keys = new long[count];
 
-		for (int i = 0; i < count; i++){
+		for (int i = 0; i < count; i++)
 			keys[i] = array.keyAt(i);
+		return keys;
+	}
+
+
+	public static <T> int[] keys(final SparseArrayCompat<T> sparseArray){
+
+		if (sparseArray == null){
+			Log.e(	TAG,
+					"SparseArrayCompat sparseArray was null!");
+			return new int[0];
 		}
+
+		final SparseArrayCompat<T> array = sparseArray;
+		final int count = array.size();
+		final int[] keys = new int[count];
+
+		for (int i = 0; i < count; i++)
+			keys[i] = array.keyAt(i);
 		return keys;
 	}
 
@@ -37,9 +54,8 @@ public class ListDataUtil{
 	public static <T> T[] concatAll(final T[] first, final T[]... rest){
 
 		int totalLength = first.length;
-		for (final T[] array : rest){
+		for (final T[] array : rest)
 			totalLength += array.length;
-		}
 		final T[] result = Arrays.copyOf(	first,
 											totalLength);
 		int offset = first.length;
@@ -58,10 +74,9 @@ public class ListDataUtil{
 	public static int[] truePositions(final BitSet mBS){
 
 		final int[] positions = new int[mBS.length()];
-		for (int i = 0; i < positions.length; i++){
+		for (int i = 0; i < positions.length; i++)
 			if (mBS.get(i))
 				positions[i] = i;
-		}
 		return positions;
 	}
 
@@ -75,99 +90,11 @@ public class ListDataUtil{
 		}
 
 		final int[] positions = new int[array.size()];
-		for (int i = 0; i < positions.length; i++){
+		for (int i = 0; i < positions.length; i++)
 			positions[i] = array.get(i);
-		}
 		return null;
 
 	}
 
-
-	/**
-	 * TODO: write docs for this
-	 * 
-	 * 
-	 * @param parcel
-	 * @param mArray
-	 * @return
-	 */
-	public static Parcel
-		writeToParcel(final Parcel parcel,
-						final LongSparseArray<Integer> mArray){
-
-		// Nastiness for writing LongSparseArray (this is how AbsListView
-		// handles it)
-		final int N = mArray != null ? mArray.size() : 0;
-		parcel.writeInt(N);
-		for (int i = 0; i < N; i++){
-			parcel.writeLong(mArray.keyAt(i));
-			parcel.writeInt(mArray.valueAt(i));
-		}
-		return parcel;
-	}
-
-
-	public static Parcel
-		writeNestedArrayToParcel(	final Parcel parcel,
-									final LongSparseArray<LongSparseArray<Integer>> mArray){
-
-		final long[] keys = keys(mArray);
-
-		parcel.writeLongArray(keys);
-
-		for (final long l : keys){
-			writeToParcel(	parcel,
-							mArray.get(l));
-		}
-
-		return parcel;
-	}
-
-
-	/**
-	 * TODO: Write docs - remember that storing N (array's size) in the Parcel
-	 * argument is mandatory! Using {@link writeLongSparseArray(Parcel,
-	 * LongSparseArray<Integer>)} will do it for you
-	 * 
-	 * @param parcel
-	 * @return
-	 */
-	public static LongSparseArray<Integer>
-		readFromParcel(final Parcel parcel){
-
-		final LongSparseArray<Integer> mArray = new LongSparseArray<Integer>();
-
-		// Nastiness for reading LongSparseArray (this is how AbsListView
-		// handles it)
-		final int N = parcel.readInt();
-
-		if (N > 0){
-			for (int i = 0; i < N; i++){
-				final long key = parcel.readLong();
-				final int value = parcel.readInt();
-				mArray.put(	key,
-							value);
-			}
-		}
-
-		return mArray;
-	}
-
-
-	public static LongSparseArray<LongSparseArray<Integer>>
-		readNestedArrayFromParcel(final Parcel parcel){
-
-		final LongSparseArray<LongSparseArray<Integer>> mArray = new LongSparseArray<LongSparseArray<Integer>>();
-
-		long[] keys;
-		keys = parcel.createLongArray();
-
-		for (final long l : keys){
-			mArray.put(	l,
-						readFromParcel(parcel));
-		}
-
-		return mArray;
-	}
 
 }

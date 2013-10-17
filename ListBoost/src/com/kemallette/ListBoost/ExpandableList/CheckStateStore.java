@@ -5,16 +5,15 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.SparseArrayCompat;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.View.BaseSavedState;
 
-import com.kemallette.ListBoost.ExpandableList.BoostExpandableListView.BoostExpandableState;
 import com.kemallette.ListBoost.Util.ListDataUtil;
+import com.kemallette.ListBoost.Util.ParcelUtil;
 
 
 /**
@@ -22,8 +21,7 @@ import com.kemallette.ListBoost.Util.ListDataUtil;
  * 
  * @author kemallette
  */
-class CheckStateStore	implements
-						Parcelable{
+class CheckStateStore{
 
 	private static final String							TAG	= "CheckStateStore";
 
@@ -64,7 +62,7 @@ class CheckStateStore	implements
 	 * This maps a groupPosition to a {@link BitSet}. The {@link BitSet} indexes
 	 * are childPositions and the bit values are true if checked, false if not.
 	 */
-	private SparseArray<BitSet>							mCheckedUnstableChildren;
+	private SparseArrayCompat<BitSet>					mCheckedUnstableChildren;
 
 	private final BoostExpandableListView				mList;
 
@@ -78,20 +76,25 @@ class CheckStateStore	implements
 			mCheckedChildren = new LongSparseArray<LongSparseArray<Integer>>();
 		}else{
 			mUnstableCheckedGroups = new BitSet(mList.getGroupCount());
-			mCheckedUnstableChildren = new SparseArray<BitSet>();
+			mCheckedUnstableChildren = new SparseArrayCompat<BitSet>();
 		}
 	}
-	
-	CheckStateStore(final Parcel in, final BoostExpandableListView mList){
-		
+
+
+	CheckStateStore(final BoostExpandableListView mList,
+					final CheckStoreSavedState ss){
+
 		this.mList = mList;
-		
-		Bundle ss = in.readBundle();
-		if(ss != null && !ss.isEmpty()) {
-			mCheckedGroups = (LongSparseArray<Integer>) ss.get("cGroups");
-			ss.putParcelable("test", mCheckedChildren);
-		}
+		this.mCheckedGroups = ss.mCheckedGroups;
+		this.mCheckedChildren = ss.mCheckedChildren;
+		this.mUnstableCheckedGroups = ss.mUnstableCheckedGroups;
+		this.mCheckedUnstableChildren = ss.mCheckedUnstableChildren;
+
+		Log.i(	TAG,
+				"SavedState Constructor called");
+
 	}
+
 
 	/*********************************************************************
 	 * Group State Setters
@@ -196,13 +199,6 @@ class CheckStateStore	implements
 	}
 
 
-	/**
-	 * Will check to see if the specified child is checked.
-	 * 
-	 * @param groupPosition
-	 * @param childPosition
-	 * @return true if checked, false if not
-	 */
 	boolean isChildChecked(final int groupPosition, final int childPosition){
 
 		if (mList.hasStableIds()){
@@ -338,8 +334,6 @@ class CheckStateStore	implements
 
 
 	/**
-	 * Convenience for {@link getCheckedChildIds(long groupId)}
-	 * 
 	 * 
 	 * @param groupPosition
 	 * @return
@@ -399,12 +393,13 @@ class CheckStateStore	implements
 	/**
 	 * 
 	 * 
-	 * @return a SparseArray<int[]> where keys are groupPositions and each value
-	 *         (int[]) are positions of that group's checked children.
+	 * @return a {@link SparseArrayCompat} where keys are groupPositions
+	 *         and each value is an array of ints representing the position of
+	 *         checked children
 	 */
-	SparseArray<int[]> getCheckedChildPositions(){
+	SparseArrayCompat<int[]> getCheckedChildPositions(){
 
-		final SparseArray<int[]> positions = new SparseArray<int[]>();
+		final SparseArrayCompat<int[]> positions = new SparseArrayCompat<int[]>();
 
 
 		if (mList.hasStableIds()){
@@ -439,7 +434,7 @@ class CheckStateStore	implements
 
 		}else{
 
-			final SparseArray<BitSet> children = mCheckedUnstableChildren;
+			final SparseArrayCompat<BitSet> children = mCheckedUnstableChildren;
 			int[] checked;
 			for (int i = 0; i < children.size(); i++){
 				checked = ListDataUtil.truePositions(children.get(i));
@@ -487,7 +482,7 @@ class CheckStateStore	implements
 				count += children.get(i)
 									.size();
 		}else{
-			final SparseArray<BitSet> children = mCheckedUnstableChildren;
+			final SparseArrayCompat<BitSet> children = mCheckedUnstableChildren;
 			for (int i = 0; i < children.size(); i++)
 				count += children.get(i)
 									.cardinality();
@@ -557,65 +552,107 @@ class CheckStateStore	implements
 	}
 
 
+	CheckStoreSavedState getSavedState(Parcelable superState){
+
+		return new CheckStoreSavedState(superState,
+										mCheckedGroups,
+										mCheckedChildren,
+										mUnstableCheckedGroups,
+										mCheckedUnstableChildren);
+	}
+
 	/*********************************************************************
 	 * Parcelable Tedious Nonsense
 	 **********************************************************************/
-	 static class CheckStoreSavedState extends BaseSavedState {
-		 
-		 
-		 LongSparseArray<Integer> mCheckedGroups;	
-		 
-		 LongSparseArray<LongSparseArray<Integer>> mCheckedChildren;
-		 
-		 BitSet mUnstableCheckedGroups;
-		 SparseArray<BitSet> mCheckedUnstableChildren;
+	static class CheckStoreSavedState	extends
+										BaseSavedState{
 
-		 
-		 CheckStoreSavedState(final Parcel in){
-			 
-			 super(in);
-			 
-			 mUnstableCheckedGroups = (BitSet) in.readSerializable();
-			 
-			
-			}
-		 
-		 
-		 @Override
-			public void writeToParcel(final Parcel dest, final int flags){
-				
-				 ListDataUtil.writeToParcel(dest, mCheckedGroups);
-					
-				
-		         
-			}
-		public static final Parcelable.Creator<CheckStoreSavedState>	
-									CREATOR	= new Parcelable.Creator<CheckStoreSavedState>(){
-			
 
-			@Override
-			public CheckStoreSavedState
-				createFromParcel(final Parcel in){
-	
-				return new CheckStoreSavedState(in);
-			}
-	
-	
-			@Override
-			public CheckStoreSavedState[]
-				newArray(final int size){
-	
-				return new CheckStoreSavedState[size];
-			}
-		};
-	
-	
+		LongSparseArray<Integer>					mCheckedGroups;
+		LongSparseArray<LongSparseArray<Integer>>	mCheckedChildren;
+
+		BitSet										mUnstableCheckedGroups;
+		SparseArrayCompat<BitSet>					mCheckedUnstableChildren;
+
+
+		CheckStoreSavedState(	Parcelable superState,
+								LongSparseArray<Integer> mCheckedGroups,
+								LongSparseArray<LongSparseArray<Integer>> mCheckedChildren,
+								BitSet mUnstableCheckedGroups,
+								SparseArrayCompat<BitSet> mCheckedUnstableChildren){
+
+			super(superState);
+
+			this.mCheckedChildren = mCheckedChildren;
+			this.mCheckedGroups = mCheckedGroups;
+			this.mCheckedUnstableChildren = mCheckedUnstableChildren;
+			this.mUnstableCheckedGroups = mUnstableCheckedGroups;
+		}
+
+
+		/**
+		 * Constructor called from {@link #CREATOR}
+		 */
+		private CheckStoreSavedState(Parcel savedState){
+
+			super(savedState);
+
+			mCheckedGroups = ParcelUtil.readLongSparseArray(savedState);
+			mCheckedChildren = ParcelUtil.readNestedLongSparseArray(savedState);
+
+			mUnstableCheckedGroups = (BitSet) savedState.readSerializable();
+			mCheckedUnstableChildren = ParcelUtil.readSparseArrayBitSet(savedState);
+
+			Log.i(	TAG,
+					"Instantiating saved state through private constructor");
+
+		}
+
+
+		@Override
+		public void writeToParcel(final Parcel dest, final int flags){
+
+			Log.i(	TAG,
+					"Writing to parcel...");
+
+			ParcelUtil.writeLongSparseArray(dest,
+											mCheckedGroups);
+			ParcelUtil.writeNestedLongSparseArray(	dest,
+													mCheckedChildren);
+
+			dest.writeSerializable(mUnstableCheckedGroups);
+			ParcelUtil.writeSparseArrayBitSet(	dest,
+												mCheckedUnstableChildren);
+
+
+		}
+
+		public static final Parcelable.Creator<CheckStoreSavedState>	CREATOR	= new Parcelable.Creator<CheckStoreSavedState>(){
+
+
+																					@Override
+																					public CheckStoreSavedState
+																						createFromParcel(final Parcel savedState){
+
+																						return new CheckStoreSavedState(savedState);
+																					}
+
+
+																					@Override
+																					public CheckStoreSavedState[]
+																						newArray(final int size){
+
+																						return new CheckStoreSavedState[size];
+																					}
+																				};
+
+
 		@Override
 		public int describeContents(){
-	
+
 			return 0;
 		}
-	 }
+	}
 
 
 }

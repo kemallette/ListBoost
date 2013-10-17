@@ -239,12 +239,9 @@ public class BoostExpandableListFragment extends
 			public void onCheckedChanged(CompoundButton buttonView,
 											boolean isChecked){
 
-				if (isChecked){
-					mExpandableList.enableOnlyOneItemChoice();
-					groupChoiceModes.setSelection(2);
-					childChoiceModes.setSelection(3);
-				}else
-					mExpandableList.disableOnlyOneItemChoice();
+				mExpandableList.enableOnlyOneItemChoice(isChecked);
+				groupChoiceModes.setSelection(2);
+				childChoiceModes.setSelection(3);
 
 			}
 		});

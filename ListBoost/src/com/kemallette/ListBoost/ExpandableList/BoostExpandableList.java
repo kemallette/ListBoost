@@ -1,9 +1,11 @@
 package com.kemallette.ListBoost.ExpandableList;
 
+
 import java.util.List;
 
-import android.util.SparseArray;
+import android.support.v4.util.SparseArrayCompat;
 import android.widget.AbsListView;
+import android.widget.BaseExpandableListAdapter;
 
 
 /**
@@ -12,7 +14,7 @@ import android.widget.AbsListView;
  * @author kemallette
  * 
  */
-public interface BoostExpandableList {
+public interface BoostExpandableList{
 
 	/**
 	 * For group choice mode:
@@ -65,46 +67,47 @@ public interface BoostExpandableList {
 	 */
 	public static final int	CHECK_MODE_ONE_ALL				= 15;
 
-	
-	
-	
+
 	public BoostExpandableListAdapter getBoostAdapter();
-	
-	
+
+
 	/*********************************************************************
-	 *  
-	 *  MultiChoice
-	 *  
+	 * 
+	 * MultiChoice
+	 * 
 	 **********************************************************************/
-	
+
 	public BoostExpandableList
 		enableChoice(int groupChoiceMode, int childChoiceMode);
 
 
 	public BoostExpandableList disableChoice();
-	
+
 
 	/**
-	 * Enables one item choice mode. Only one item at a time throughout the list
-	 * (including groups and children) can be checked. isChoiceOn() will return
-	 * true.
+	 * If true is passed, only one item at a time throughout the list
+	 * (including groups and children) can be checked and {@link #isChoiceOn()}
+	 * will return true. If {@link #checkChildrenWithGroup()} is true, it will
+	 * be disabled until {@link #checkChildrenWithGroup(boolean)} is called
+	 * again by passing true. If choice mode has not previously been enabled, it
+	 * will be enabled and set both group and child choice modes to
+	 * {@value #CHECK_MODE_ONE_ALL}
 	 * 
-	 * If checkChildrenWithGroup is enabled, it will be disabled until
-	 * checkChildrenWithGroup is set to true again.
+	 * If false is passed, choice mode will be disabled and both group and child
+	 * modes will revert to {@link BoostExpandableList#CHECK_MODE_NONE}.
+	 * {@link #isChoiceOn()} will return false until either enableChoice(int
+	 * groupChoiceMode, int childChoiceMode) or enableOnlyOneItemChoice() are
+	 * called again.
+	 * 
 	 */
-	public BoostExpandableList enableOnlyOneItemChoice();
+	public BoostExpandableList enableOnlyOneItemChoice(boolean enable);
 
-
-	/**
-	 * Disables one item choice mode. isChoiceOn() will return false until
-	 * either enableChoice(int groupChoiceMode, int childChoiceMode) or
-	 * enableOneItemChoice() are called.
-	 */
-	public BoostExpandableList disableOnlyOneItemChoice();
 
 	public boolean isOneItemChoiceOn();
 
+
 	public boolean isChoiceOn();
+
 
 	/*********************************************************************
 	 * Checked ID Getter
@@ -118,7 +121,7 @@ public interface BoostExpandableList {
 
 
 	/**
-	 * Use this if you want ids for all checked children in the entire list,
+	 * Use this to retrieve a list of all checked children in the entire list,
 	 * regardless of which group they're in.
 	 * 
 	 * @return
@@ -127,11 +130,13 @@ public interface BoostExpandableList {
 
 
 	/**
-	 * Creates a List<Long> of checked children for the group at groupPosition.
+	 * Use this to retrieve a list of the checked children ids in the group at
+	 * the
+	 * groupPosition passed.
 	 * 
 	 * @param groupPosition
 	 *            - group position where the checked children fall under
-	 * @return -
+	 * @return
 	 */
 	public List<Long> getCheckedChildIds(int groupPosition);
 
@@ -141,7 +146,9 @@ public interface BoostExpandableList {
 	 **********************************************************************/
 	/**
 	 * 
-	 * if !stableIds, cannot ensure these aren't stale
+	 * Note that if your adapter's
+	 * {@link BaseExpandableListAdapter#hasStableIds()} returns false these
+	 * positions may be stale.
 	 * 
 	 * @return
 	 */
@@ -150,16 +157,20 @@ public interface BoostExpandableList {
 
 	/**
 	 * 
-	 * if !stableIds, cannot ensure these aren't stale
+	 * Note that if your adapter's
+	 * {@link BaseExpandableListAdapter#hasStableIds()} returns false these
+	 * positions may be stale.
 	 * 
 	 * @return
 	 */
-	public SparseArray<int[]> getCheckedChildPositions();
+	public SparseArrayCompat<int[]> getCheckedChildPositions();
 
 
 	/**
 	 * 
-	 * if !stableIds, cannot ensure these aren't stale
+	 * Note that if your adapter's
+	 * {@link BaseExpandableListAdapter#hasStableIds()} returns false these
+	 * positions may be stale.
 	 * 
 	 * @return
 	 */
@@ -235,7 +246,9 @@ public interface BoostExpandableList {
 
 
 	/**
-	 * Gives a count of all children in the list regardless of parent group.
+	 * Use this to get a count of all checked children in the list regardless of
+	 * the
+	 * group they fall under.
 	 * 
 	 * @return total number of checked children in the list
 	 */
@@ -243,7 +256,8 @@ public interface BoostExpandableList {
 
 
 	/**
-	 * Gives a count of children checked for the group at groupPosition
+	 * Use this to get a count of only checked children that fall under the
+	 * group at groupPosition.
 	 * 
 	 * @param groupPosition
 	 * @return the number of checked children for group at groupPosition
@@ -280,5 +294,5 @@ public interface BoostExpandableList {
 
 	public BoostExpandableList
 		removeExpandableCheckListener();
-	
+
 }
