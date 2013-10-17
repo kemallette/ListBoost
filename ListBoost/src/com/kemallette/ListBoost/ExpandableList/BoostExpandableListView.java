@@ -7,6 +7,7 @@ import java.util.List;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -20,52 +21,53 @@ import android.widget.ExpandableListView;
 import com.kemallette.ListBoost.R;
 import com.kemallette.ListBoost.ExpandableList.BoostExpandableListAdapter.Holder;
 
-public class BoostExpandableListView	extends
-											ExpandableListView	implements
-																BoostExpandableList, ExpandableListCheckListener{
+public class BoostExpandableListView extends
+									ExpandableListView	implements
+														BoostExpandableList,
+														ExpandableListCheckListener{
 
-	private static final String				TAG						= "BoostExpandableListView";
+	private static final String			TAG						= "BoostExpandableListView";
 
 
 	/**
 	 * Flag indicating if an item's checked state change is from a user actually
 	 * touching the screen
 	 */
-	private boolean							ignoreCheckChange		= false;
-	private boolean							isOneItemChoice			= false;
-	private boolean							isChoiceOn				= true;
+	private boolean						ignoreCheckChange		= false;
+	private boolean						isOneItemChoice			= false;
+	private boolean						isChoiceOn				= true;
 	/**
 	 * If true, on a group check change, that group's children will match the
 	 * group's check state. In other words, if you check a group, all its
 	 * children will also be checked and the reverse. If a group is unchecked,
 	 * all its children will be unchecked.
 	 */
-	private boolean							checkChildrenWithGroup	= false;
+	private boolean						checkChildrenWithGroup	= false;
 
 
-	private int								groupChoiceMode			= CHECK_MODE_MULTI;
-	private int								childChoiceMode			= CHECK_MODE_MULTI;
+	private int							groupChoiceMode			= CHECK_MODE_MULTI;
+	private int							childChoiceMode			= CHECK_MODE_MULTI;
 
-	private CheckStateStore					mCheckStore;
-	private ExpandableListCheckListener				mClientCheckListener;
+	private CheckStateStore				mCheckStore;
+	private ExpandableListCheckListener	mClientCheckListener;
 
 	private BoostExpandableListAdapter	mAdapterWrapper;
 
 
 	public BoostExpandableListView(	final Context context,
-											final AttributeSet attrs,
-											final int defStyle){
+									final AttributeSet attrs,
+									final int defStyle){
 
 		super(	context,
 				attrs,
 				defStyle);
 
 		if (attrs != null){
-			TypedArray a = getContext()
-										.obtainStyledAttributes(attrs,
-																R.styleable.BoostExpandableListView,
-																0,
-																0);
+			final TypedArray a = getContext()
+												.obtainStyledAttributes(attrs,
+																		R.styleable.BoostExpandableListView,
+																		0,
+																		0);
 
 			groupChoiceMode = a.getInt(	R.styleable.BoostExpandableListView_groupChoiceMode,
 										CHECK_MODE_MULTI);
@@ -100,7 +102,7 @@ public class BoostExpandableListView	extends
 
 
 	public BoostExpandableListView(	final Context context,
-											final AttributeSet attrs){
+									final AttributeSet attrs){
 
 		this(	context,
 				attrs,
@@ -112,27 +114,6 @@ public class BoostExpandableListView	extends
 
 		this(	context,
 				null);
-	}
-
-
-	@Override
-	public void onRestoreInstanceState(final Parcelable state){
-
-		super.onRestoreInstanceState(state);
-
-		// TODO: restore necessary saved fields - remember that super does a few
-		// things too
-	}
-
-
-	@Override
-	public Parcelable onSaveInstanceState(){
-
-		final Parcelable mParcel = super.onSaveInstanceState();
-
-		// TODO: save all necessary fields - remember that super does a few
-		// things too
-		return mParcel;
 	}
 
 
@@ -240,7 +221,7 @@ public class BoostExpandableListView	extends
 
 	@Override
 	public BoostExpandableList
-		enableChoice(int groupChoiceMode, int childChoiceMode){
+		enableChoice(final int groupChoiceMode, final int childChoiceMode){
 
 		isOneItemChoice = false;
 		isChoiceOn = true;
@@ -534,13 +515,13 @@ public class BoostExpandableListView	extends
 	}
 
 
-	private void enableCheckable(Checkable checkableView){
+	private void enableCheckable(final Checkable checkableView){
 
 		((View) checkableView).setVisibility(View.VISIBLE);
 	}
 
 
-	private void disableCheckable(Checkable checkableView){
+	private void disableCheckable(final Checkable checkableView){
 
 		((View) checkableView).setVisibility(View.INVISIBLE);
 	}
@@ -1129,6 +1110,132 @@ public class BoostExpandableListView	extends
 
 
 	/*********************************************************************
+	 * Save/Restore State
+	 **********************************************************************/
+	@Override
+	public void onRestoreInstanceState(final Parcelable state){
+
+		if (!(state instanceof BoostExpandableState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+
+		BoostExpandableState ss = (BoostExpandableState) state;
+		
+        super.onRestoreInstanceState(ss.getSuperState());
+        
+        if(ss.mCheckStore != null)
+        	mCheckStore = ss.mCheckStore;
+	}
+
+
+	@Override
+	public Parcelable onSaveInstanceState(){
+
+		super.onSaveInstanceState();
+
+		final Parcelable superState = super.onSaveInstanceState();
+		return new BoostExpandableState(superState,
+										mCheckStore, 
+										 isOneItemChoice,
+										 isChoiceOn,
+										 checkChildrenWithGroup,
+										 groupChoiceMode,
+										 childChoiceMode );
+	}
+
+	static class BoostExpandableState	extends
+										BaseSavedState{
+
+		boolean isOneItemChoice;
+		boolean isChoiceOn;
+		boolean checkChildrenWithGroup;	
+		
+		int groupChoiceMode;
+		int childChoiceMode;
+		
+		CheckStateStore	mCheckStore;
+		
+
+		/**
+		 * Constructor called from
+		 * {@link BoostExpandableListView#onSaveInstanceState()}
+		 */
+		BoostExpandableState(	final Parcelable superState,
+								final CheckStateStore mCheckStore,
+								boolean isOneItemChoice,
+								boolean isChoiceOn,
+								boolean checkChildrenWithGroup,
+								int groupChoiceMode,
+								int childChoiceMode){
+
+			super(superState);
+
+			this.mCheckStore = mCheckStore;
+			this.isOneItemChoice = isOneItemChoice;
+			this.isChoiceOn =  isChoiceOn;
+			this.checkChildrenWithGroup = checkChildrenWithGroup; 
+			this.groupChoiceMode = groupChoiceMode;
+			this.childChoiceMode = childChoiceMode;
+		}
+
+
+		/**
+		 * Constructor called from {@link #CREATOR}
+		 */
+		private BoostExpandableState(final Parcel in){
+
+			super(in);
+			
+			mCheckStore = in.readParcelable(CheckStateStore.class.getClassLoader());
+			
+			isOneItemChoice = in.readByte() == 1; 
+			isChoiceOn = in.readByte() == 1; 
+			checkChildrenWithGroup  = in.readByte() == 1;  
+			
+			groupChoiceMode = in.readInt();
+			childChoiceMode = in.readInt();
+		}
+
+
+		@Override
+		public void writeToParcel(final Parcel out, final int flags){
+
+			super.writeToParcel(out,
+								flags);
+			
+			out.writeParcelable(mCheckStore, 0);
+			
+			out.writeByte((byte) (isOneItemChoice ? 1 : 0)); 
+			out.writeByte((byte) (isChoiceOn ? 1 : 0)); 
+			out.writeByte((byte) (checkChildrenWithGroup ? 1 : 0)); 
+			
+			out.writeInt(groupChoiceMode);
+			out.writeInt(childChoiceMode);
+		}
+
+		public static final Parcelable.Creator<BoostExpandableState>	
+								CREATOR	= new Parcelable.Creator<BoostExpandableState>(){
+
+				@Override
+				public BoostExpandableState
+					createFromParcel(final Parcel in){
+
+					return new BoostExpandableState(in);
+				}
+
+
+				@Override
+				public BoostExpandableState[]
+					newArray(final int size){
+
+					return new BoostExpandableState[size];
+				}
+		};
+	}
+
+
+	/*********************************************************************
 	 * Overrides from underlying ListView and AbsListView
 	 **********************************************************************/
 
@@ -1157,8 +1264,8 @@ public class BoostExpandableListView	extends
 
 
 	/*
-	 * For {@link BoostExpandableListView}, use getCheckedChildPositions
-	 * or getCheckedGroupPositions instead
+	 * For {@link BoostExpandableListView}, use getCheckedChildPositions or
+	 * getCheckedGroupPositions instead
 	 */
 	@Override
 	public int getCheckedItemPosition(){
@@ -1170,8 +1277,8 @@ public class BoostExpandableListView	extends
 
 
 	/*
-	 * For {@link BoostExpandableListView}, use getCheckedChildPositions
-	 * or getCheckedGroupPositions instead
+	 * For {@link BoostExpandableListView}, use getCheckedChildPositions or
+	 * getCheckedGroupPositions instead
 	 */
 	@Override
 	public SparseBooleanArray getCheckedItemPositions(){

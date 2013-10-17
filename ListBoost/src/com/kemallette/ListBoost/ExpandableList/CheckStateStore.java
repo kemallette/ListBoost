@@ -5,23 +5,27 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import com.kemallette.ListBoost.Util.ListDataUtil;
-
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.util.LongSparseArray;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.View.BaseSavedState;
+
+import com.kemallette.ListBoost.ExpandableList.BoostExpandableListView.BoostExpandableState;
+import com.kemallette.ListBoost.Util.ListDataUtil;
 
 
 /**
- * This class is used to store {@link BoostExpandableListView} checked
- * states.
+ * This class is used to store {@link BoostExpandableListView} checked states.
  * 
  * @author kemallette
  */
-class CheckStateStore{
+class CheckStateStore	implements
+						Parcelable{
 
 	private static final String							TAG	= "CheckStateStore";
-
 
 	/**
 	 * Keys are groupIds. Values are last known groupPosition. If a key
@@ -62,7 +66,7 @@ class CheckStateStore{
 	 */
 	private SparseArray<BitSet>							mCheckedUnstableChildren;
 
-	private final BoostExpandableListView			mList;
+	private final BoostExpandableListView				mList;
 
 
 	CheckStateStore(final BoostExpandableListView mList){
@@ -77,7 +81,17 @@ class CheckStateStore{
 			mCheckedUnstableChildren = new SparseArray<BitSet>();
 		}
 	}
-
+	
+	CheckStateStore(final Parcel in, final BoostExpandableListView mList){
+		
+		this.mList = mList;
+		
+		Bundle ss = in.readBundle();
+		if(ss != null && !ss.isEmpty()) {
+			mCheckedGroups = (LongSparseArray<Integer>) ss.get("cGroups");
+			ss.putParcelable("test", mCheckedChildren);
+		}
+	}
 
 	/*********************************************************************
 	 * Group State Setters
@@ -541,4 +555,67 @@ class CheckStateStore{
 			mUnstableCheckedGroups.clear();
 		}
 	}
+
+
+	/*********************************************************************
+	 * Parcelable Tedious Nonsense
+	 **********************************************************************/
+	 static class CheckStoreSavedState extends BaseSavedState {
+		 
+		 
+		 LongSparseArray<Integer> mCheckedGroups;	
+		 
+		 LongSparseArray<LongSparseArray<Integer>> mCheckedChildren;
+		 
+		 BitSet mUnstableCheckedGroups;
+		 SparseArray<BitSet> mCheckedUnstableChildren;
+
+		 
+		 CheckStoreSavedState(final Parcel in){
+			 
+			 super(in);
+			 
+			 mUnstableCheckedGroups = (BitSet) in.readSerializable();
+			 
+			
+			}
+		 
+		 
+		 @Override
+			public void writeToParcel(final Parcel dest, final int flags){
+				
+				 ListDataUtil.writeToParcel(dest, mCheckedGroups);
+					
+				
+		         
+			}
+		public static final Parcelable.Creator<CheckStoreSavedState>	
+									CREATOR	= new Parcelable.Creator<CheckStoreSavedState>(){
+			
+
+			@Override
+			public CheckStoreSavedState
+				createFromParcel(final Parcel in){
+	
+				return new CheckStoreSavedState(in);
+			}
+	
+	
+			@Override
+			public CheckStoreSavedState[]
+				newArray(final int size){
+	
+				return new CheckStoreSavedState[size];
+			}
+		};
+	
+	
+		@Override
+		public int describeContents(){
+	
+			return 0;
+		}
+	 }
+
+
 }
