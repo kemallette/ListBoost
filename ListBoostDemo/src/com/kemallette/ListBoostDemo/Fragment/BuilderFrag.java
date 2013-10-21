@@ -27,9 +27,18 @@ public class BuilderFrag extends
 										android.widget.RadioGroup.OnCheckedChangeListener,
 										android.widget.CompoundButton.OnCheckedChangeListener{
 
-	private final Bundle	mFeatures	= new Bundle();
+	private static final String	TAG			= "BuilderFrag";
 
-	private ListType		mListType;
+
+	private Bundle				mFeatures	= new Bundle();
+
+	private ListType			mListType;
+
+
+	private CheckBox			mSlideBox;
+	private CheckBox			mSwipeBox;
+	private CheckBox			mDragDropBox;
+	private CheckBox			mMultiChoiceBox;
 
 
 	/**
@@ -43,16 +52,16 @@ public class BuilderFrag extends
 
 	public static BuilderFrag newInstance(){
 
-		BuilderFrag mFrag = new BuilderFrag();
+		final BuilderFrag mFrag = new BuilderFrag();
 
 		return mFrag;
 	}
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater,
-								ViewGroup container,
-								Bundle savedInstanceState){
+	public View onCreateView(final LayoutInflater inflater,
+								final ViewGroup container,
+								final Bundle savedInstanceState){
 
 		return inflater.inflate(R.layout.builder_frag,
 								container,
@@ -61,17 +70,39 @@ public class BuilderFrag extends
 
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState){
+	public void onViewCreated(final View view, final Bundle savedInstanceState){
 
 		super.onViewCreated(view,
 							savedInstanceState);
 
 		initViews();
+
+		if (savedInstanceState != null){
+			mFeatures = new Bundle();
+
+			mFeatures.putBoolean(	SWIPE,
+									mSwipeBox.isChecked());
+			mFeatures.putBoolean(	SLIDE,
+									mSlideBox.isChecked());
+			mFeatures.putBoolean(	DRAGDROP,
+									mDragDropBox.isChecked());
+			mFeatures.putBoolean(	MULTICHOICE,
+									mMultiChoiceBox.isChecked());
+		}
 	}
 
 
 	@Override
-	public void onStartDemo(ListType listType, Bundle mDemoFeatures){
+	public void onResume(){
+
+		super.onResume();
+
+	}
+
+
+	@Override
+	public void
+		onStartDemo(final ListType listType, final Bundle mDemoFeatures){
 
 		((DemoBuilderListener) getActivity()).onStartDemo(	listType,
 															mDemoFeatures);
@@ -79,7 +110,7 @@ public class BuilderFrag extends
 
 
 	@Override
-	public void onClick(View v){
+	public void onClick(final View v){
 
 		if (v.getId() == R.id.startDemo)
 			onStartDemo(mListType,
@@ -88,7 +119,8 @@ public class BuilderFrag extends
 
 
 	@Override
-	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
+	public void onCheckedChanged(final CompoundButton buttonView,
+									final boolean isChecked){
 
 		switch(buttonView.getId()){
 
@@ -116,7 +148,7 @@ public class BuilderFrag extends
 
 
 	@Override
-	public void onCheckedChanged(RadioGroup group, int checkedId){
+	public void onCheckedChanged(final RadioGroup group, final int checkedId){
 
 		if (group.getId() == R.id.listTypeGroup)
 			mListType = (checkedId == R.id.listRadio)	? ListType.LISTVIEW
@@ -126,14 +158,14 @@ public class BuilderFrag extends
 
 	private void initViews(){
 
-		RadioGroup mListTypeGroup = (RadioGroup) getView().findViewById(R.id.listTypeGroup);
+		final RadioGroup mListTypeGroup = (RadioGroup) getView().findViewById(R.id.listTypeGroup);
 
-		CheckBox mSlideBox = (CheckBox) getView().findViewById(R.id.slide);
-		CheckBox mSwipeBox = (CheckBox) getView().findViewById(R.id.swipe);
-		CheckBox mDragDropBox = (CheckBox) getView().findViewById(R.id.dragdrop);
-		CheckBox mMultiChoiceBox = (CheckBox) getView().findViewById(R.id.multiChoice);
+		mSlideBox = (CheckBox) getView().findViewById(R.id.slide);
+		mSwipeBox = (CheckBox) getView().findViewById(R.id.swipe);
+		mDragDropBox = (CheckBox) getView().findViewById(R.id.dragdrop);
+		mMultiChoiceBox = (CheckBox) getView().findViewById(R.id.multiChoice);
 
-		Button mStartDemoButton = (Button) getView().findViewById(R.id.startDemo);
+		final Button mStartDemoButton = (Button) getView().findViewById(R.id.startDemo);
 
 		mListTypeGroup.setOnCheckedChangeListener(this);
 

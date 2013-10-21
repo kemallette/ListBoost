@@ -2,7 +2,6 @@ package com.kemallette.ListBoostDemo.Fragment;
 
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -21,6 +19,7 @@ import com.kemallette.ListBoost.ExpandableList.BoostExpandableList;
 import com.kemallette.ListBoost.ExpandableList.BoostExpandableListView;
 import com.kemallette.ListBoost.ExpandableList.ExpandableListCheckListener;
 import com.kemallette.ListBoostDemo.R;
+import com.kemallette.ListBoostDemo.Activity.ListFeatureListener;
 import com.kemallette.ListBoostDemo.Activity.MainActivity;
 import com.kemallette.ListBoostDemo.Adapter.ExampleAdapter;
 
@@ -28,39 +27,95 @@ import com.kemallette.ListBoostDemo.Adapter.ExampleAdapter;
 public class BoostExpandableListFragment extends
 										SherlockFragment implements
 														ExpandableListCheckListener,
-														OnItemSelectedListener{
+														OnItemSelectedListener,
+														ListFeatureListener{
 
-	private static final String		TAG				= "MainActivity";
+	private static final String		TAG					= "MainActivity";
+	private static final String		GROUP_CHOICE_MODE	= "groupChoiceMode";
+	private static final String		CHILD_CHOICE_MODE	= "childChoiceMode";
 
 
-	private boolean					enableChoice	= false;
-	private boolean					enableSwipe		= false;
-	private boolean					enableSlide		= false;
-	private boolean					enableDragDrop	= false;
+	private boolean					enableChoice		= false;
+	private boolean					enableSwipe			= false;
+	private boolean					enableSlide			= false;
+	private boolean					enableDragDrop		= false;
 
-	private int						childMode		= BoostExpandableList.CHECK_MODE_MULTI;
-	private int						groupMode		= BoostExpandableList.CHECK_MODE_MULTI;
+	private int						childChoiceMode		= BoostExpandableList.CHECK_MODE_MULTI;
+	private int						groupChoiceMode		= BoostExpandableList.CHECK_MODE_MULTI;
+	private int						groupModeSpinnerPosition;
+	private int						childModeSpinnerPosition;
 
-	private Bundle					mFeatures;
 	private ToggleButton			onlyOneItem;
-	private BoostExpandableListView	mExpandableList;
+
+	private Spinner					groupChoiceModes;
+	private Spinner					childChoiceModes;
+
+	private LinearLayout			mChoiceOptions;
+
+	private BoostExpandableListView	mList;
 	private ExampleAdapter			mAdapter;
 
 
-	public static BoostExpandableListFragment newInstance(Bundle mFeatures){
+	public static BoostExpandableListFragment
+		newInstance(){
 
-		BoostExpandableListFragment mFrag = new BoostExpandableListFragment();
+		final BoostExpandableListFragment frag = new BoostExpandableListFragment();
+		// frag.setArguments(features);
 
-		mFrag.setArguments(mFeatures);
-
-		return mFrag;
+		return frag;
 	}
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater,
-								ViewGroup container,
-								Bundle savedInstanceState){
+	public void onCreate(final Bundle savedInstanceState){
+
+		super.onCreate(savedInstanceState);
+
+		if (savedInstanceState != null
+			&& !savedInstanceState.isEmpty()){
+			enableChoice = savedInstanceState.getBoolean(	MainActivity.MULTICHOICE,
+															false);
+			enableSlide = savedInstanceState.getBoolean(MainActivity.SLIDE,
+														false);
+			enableSwipe = savedInstanceState.getBoolean(MainActivity.SWIPE,
+														false);
+			enableDragDrop = savedInstanceState.getBoolean(	MainActivity.DRAGDROP,
+															false);
+			if (enableChoice){
+				groupModeSpinnerPosition = savedInstanceState.getInt(GROUP_CHOICE_MODE);
+				childModeSpinnerPosition = savedInstanceState.getInt(CHILD_CHOICE_MODE);
+			}
+		}
+	}
+
+
+	@Override
+	public void onSaveInstanceState(final Bundle outState){
+
+		outState.putBoolean(MainActivity.SWIPE,
+							enableSwipe);
+		outState.putBoolean(MainActivity.SLIDE,
+							enableSlide);
+		outState.putBoolean(MainActivity.DRAGDROP,
+							enableDragDrop);
+		outState.putBoolean(MainActivity.MULTICHOICE,
+							enableChoice);
+
+		if (enableChoice){
+			outState.putInt(GROUP_CHOICE_MODE,
+							groupChoiceModes.getSelectedItemPosition());
+			outState.putInt(CHILD_CHOICE_MODE,
+							childChoiceModes.getSelectedItemPosition());
+		}
+
+		super.onSaveInstanceState(outState);
+	}
+
+
+	@Override
+	public View onCreateView(final LayoutInflater inflater,
+								final ViewGroup container,
+								final Bundle savedInstanceState){
 
 		return inflater.inflate(R.layout.expandable_list_frag,
 								container,
@@ -69,12 +124,38 @@ public class BoostExpandableListFragment extends
 
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState){
+	public void onViewCreated(final View view, final Bundle savedInstanceState){
 
 		super.onViewCreated(view,
 							savedInstanceState);
-		extractFeatures();
-		initViews();
+
+		mList = (BoostExpandableListView) getView().findViewById(R.id.list);
+		mList.setExpandableCheckListener(this);
+
+		mAdapter = new ExampleAdapter(getActivity());
+		mList.setAdapter(mAdapter);
+
+		initChoiceModeOptions();
+	}
+
+
+	@Override
+	public void onResume(){
+
+		super.onResume();
+
+		enableFeatures();
+	}
+
+
+	@Override
+	public void onEnableFeatures(final Bundle features){
+
+		extractFeatures(features);
+
+		if (mList != null){
+			enableFeatures();
+		}
 	}
 
 
@@ -87,13 +168,13 @@ public class BoostExpandableListFragment extends
 									final long groupId,
 									final boolean isChecked){
 
-		Toast.makeText(	getActivity(),
-						"Group Check Change\nid: "
-							+ groupId
-							+ "\n isChecked: "
-							+ isChecked,
-						Toast.LENGTH_SHORT)
-				.show();
+		// Toast.makeText( getActivity(),
+		// "Group Check Change\nid: "
+		// + groupId
+		// + "\n isChecked: "
+		// + isChecked,
+		// Toast.LENGTH_SHORT)
+		// .show();
 	}
 
 
@@ -105,13 +186,13 @@ public class BoostExpandableListFragment extends
 									final long childId,
 									final boolean isChecked){
 
-		Toast.makeText(	getActivity(),
-						"Child Check Change\nid: "
-							+ childId
-							+ "\n isChecked: "
-							+ isChecked,
-						Toast.LENGTH_SHORT)
-				.show();
+		// Toast.makeText( getActivity(),
+		// "Child Check Change\nid: "
+		// + childId
+		// + "\n isChecked: "
+		// + isChecked,
+		// Toast.LENGTH_SHORT)
+		// .show();
 
 	}
 
@@ -120,15 +201,18 @@ public class BoostExpandableListFragment extends
 	 * Choice Mode Spinner Callbacks
 	 **********************************************************************/
 	@Override
-	public void onItemSelected(AdapterView<?> parent,
-								View view,
-								int position,
-								long id){
+	public void onItemSelected(final AdapterView<?> parent,
+								final View view,
+								final int position,
+								final long id){
 
-		if (!mExpandableList.isChoiceOn())
-			mExpandableList.enableChoice(	groupMode,
-											childMode);
 		onlyOneItem.setChecked(false);
+
+		if (!mList.isChoiceOn()){
+			mChoiceOptions.setVisibility(View.VISIBLE);
+			mList.enableChoice(	groupChoiceMode,
+								childChoiceMode);
+		}
 
 		switch(parent.getId()){
 
@@ -137,20 +221,19 @@ public class BoostExpandableListFragment extends
 				switch(position){
 
 					case 0:
-						Log.i(	TAG,
-								"group to multi");
-						groupMode = BoostExpandableList.CHECK_MODE_MULTI;
+						groupChoiceMode = BoostExpandableList.CHECK_MODE_MULTI;
 						break;
 
 					case 1:
-						groupMode = BoostExpandableList.CHECK_MODE_ONE;
+						groupChoiceMode = BoostExpandableList.CHECK_MODE_ONE;
 						break;
 
 					case 2:
-						groupMode = BoostExpandableList.CHECK_MODE_NONE;
+						groupChoiceMode = BoostExpandableList.CHECK_MODE_NONE;
 						break;
 				}
-				mExpandableList.setGroupChoiceMode(groupMode);
+				mList.setGroupChoiceMode(groupChoiceMode);
+				groupModeSpinnerPosition = position;
 				break;
 
 			case R.id.childChoiceModes:
@@ -158,99 +241,106 @@ public class BoostExpandableListFragment extends
 				switch(position){
 
 					case 0:
-						Log.i(	TAG,
-								"child to multi");
-
-						childMode = BoostExpandableList.CHECK_MODE_MULTI;
+						childChoiceMode = BoostExpandableList.CHECK_MODE_MULTI;
 						break;
 
 					case 1:
-						childMode = BoostExpandableList.CHILD_CHECK_MODE_ONE_PER_GROUP;
+						childChoiceMode = BoostExpandableList.CHILD_CHECK_MODE_ONE_PER_GROUP;
 						break;
 
 					case 2:
-						childMode = BoostExpandableList.CHECK_MODE_ONE;
+						childChoiceMode = BoostExpandableList.CHECK_MODE_ONE;
 						break;
 
 					case 3:
-						childMode = BoostExpandableList.CHECK_MODE_NONE;
+						childChoiceMode = BoostExpandableList.CHECK_MODE_NONE;
 						break;
 				}
-				mExpandableList.setChildChoiceMode(childMode);
+				mList.setChildChoiceMode(childChoiceMode);
+				childModeSpinnerPosition = position;
 				break;
 		}
 	}
 
 
 	@Override
-	public void onNothingSelected(AdapterView<?> parent){
+	public void onNothingSelected(final AdapterView<?> parent){
 
-
-	}
-
-
-	private void extractFeatures(){
-
-		mFeatures = getArguments();
-
-		if (mFeatures != null
-			&& !mFeatures.isEmpty()){
-
-			enableChoice = mFeatures.getBoolean(MainActivity.MULTICHOICE,
-												false);
-			enableSlide = mFeatures.getBoolean(	MainActivity.SLIDE,
-												false);
-			enableSwipe = mFeatures.getBoolean(	MainActivity.SWIPE,
-												false);
-			enableDragDrop = mFeatures.getBoolean(	MainActivity.DRAGDROP,
-													false);
-		}
-	}
-
-
-	private void initViews(){
-
-		mExpandableList = (BoostExpandableListView) getView().findViewById(R.id.list);
-		mExpandableList.setExpandableCheckListener(this);
-
-		initListAdapter();
-
-		if (enableChoice)
-			initChoiceModeOptions();
-		else{
-			LinearLayout mChoiceOptions = (LinearLayout) getView().findViewById(R.id.choice_options_layout);
-			mChoiceOptions.setVisibility(View.GONE);
-		}
 
 	}
 
 
 	private void initChoiceModeOptions(){
 
-		final Spinner groupChoiceModes = (Spinner) getView().findViewById(R.id.groupChoiceModes);
-		final Spinner childChoiceModes = (Spinner) getView().findViewById(R.id.childChoiceModes);
+		mChoiceOptions = (LinearLayout) getView().findViewById(R.id.choice_options_layout);
+
+		groupChoiceModes = (Spinner) mChoiceOptions.findViewById(R.id.groupChoiceModes);
+		childChoiceModes = (Spinner) mChoiceOptions.findViewById(R.id.childChoiceModes);
+
 		groupChoiceModes.setOnItemSelectedListener(this);
 		childChoiceModes.setOnItemSelectedListener(this);
 
-		onlyOneItem = (ToggleButton) getView().findViewById(R.id.onlyOneItem);
+		onlyOneItem = (ToggleButton) mChoiceOptions.findViewById(R.id.onlyOneItem);
 		onlyOneItem.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
 			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-											boolean isChecked){
+			public void onCheckedChanged(final CompoundButton buttonView,
+											final boolean isChecked){
 
-				mExpandableList.enableOnlyOneItemChoice(isChecked);
-				groupChoiceModes.setSelection(2);
-				childChoiceModes.setSelection(3);
+				mList.enableOnlyOneItemChoice(isChecked);
+				groupChoiceModes.setSelection(2); // 2 is position for
+													// CHECK_MODE_NONE
+				childChoiceModes.setSelection(3); // 3 is position for
+													// CHECK_MODE_NONE
 
 			}
 		});
+
 	}
 
 
-	private void initListAdapter(){
+	private void extractFeatures(final Bundle features){
 
-		mAdapter = new ExampleAdapter(getActivity());
-		mExpandableList.setAdapter(mAdapter);
+		if (features != null
+			&& !features.isEmpty()){
+
+			enableChoice = features.getBoolean(	MainActivity.MULTICHOICE,
+												false);
+			enableSlide = features.getBoolean(	MainActivity.SLIDE,
+												false);
+			enableSwipe = features.getBoolean(	MainActivity.SWIPE,
+												false);
+			enableDragDrop = features.getBoolean(	MainActivity.DRAGDROP,
+													false);
+		}
 	}
+
+
+	private void enableFeatures(){
+
+		if (enableChoice){
+			mChoiceOptions.setVisibility(View.VISIBLE);
+
+			groupChoiceModes.setSelection(groupModeSpinnerPosition);
+			childChoiceModes.setSelection(childModeSpinnerPosition);
+
+		}else{
+			mList.disableChoice();
+			mChoiceOptions.setVisibility(View.GONE);
+		}
+
+		if (enableDragDrop){
+			// TODO when implemented
+		}
+
+		if (enableSlide){
+			// TODO when implemented
+		}
+
+		if (enableSwipe){
+			// TODO when implemented
+		}
+	}
+
+
 }

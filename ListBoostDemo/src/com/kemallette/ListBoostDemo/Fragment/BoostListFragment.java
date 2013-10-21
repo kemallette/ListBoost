@@ -16,11 +16,14 @@ import com.kemallette.ListBoost.List.BoostAdapter;
 import com.kemallette.ListBoost.List.BoostListView;
 import com.kemallette.ListBoost.List.OnSlidingMenuItemClickListener;
 import com.kemallette.ListBoostDemo.R;
+import com.kemallette.ListBoostDemo.Activity.DemoBuilderListener;
+import com.kemallette.ListBoostDemo.Activity.ListFeatureListener;
 
 
 public class BoostListFragment	extends
 								SherlockFragment implements
-												OnSlidingMenuItemClickListener{
+												OnSlidingMenuItemClickListener,
+												ListFeatureListener{
 
 	private final int[]		mSlidingViewButtonIds	= new int[] {	R.id.b1,
 						R.id.b2,
@@ -37,18 +40,18 @@ public class BoostListFragment	extends
 	}
 
 
-	public static BoostListFragment newInstance(Bundle mFeatures){
+	public static BoostListFragment newInstance(final Bundle mFeatures){
 
-		BoostListFragment mFrag = new BoostListFragment();
+		final BoostListFragment mFrag = new BoostListFragment();
 
 		return mFrag;
 	}
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater,
-								ViewGroup container,
-								Bundle savedInstanceState){
+	public View onCreateView(final LayoutInflater inflater,
+								final ViewGroup container,
+								final Bundle savedInstanceState){
 
 		return inflater.inflate(R.layout.boost_list_frag,
 								container,
@@ -57,7 +60,7 @@ public class BoostListFragment	extends
 
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState){
+	public void onViewCreated(final View view, final Bundle savedInstanceState){
 
 		super.onViewCreated(view,
 							savedInstanceState);
@@ -68,12 +71,22 @@ public class BoostListFragment	extends
 
 
 	@Override
-	public void onSlideItemClick(View itemView, View clickedView, int position){
+	public void onSlideItemClick(	final View itemView,
+									final View clickedView,
+									final int position){
 
 		Toast.makeText(	getActivity(),
 						((Button) clickedView).getText(),
 						Toast.LENGTH_SHORT)
 				.show();
+	}
+
+
+	@Override
+	public void onEnableFeatures(Bundle features){
+
+		// TODO Auto-generated method stub
+		
 	}
 
 
@@ -110,7 +123,7 @@ public class BoostListFragment	extends
 		private Holder	mHolder;
 
 
-		public BoostDemoAdapter(BaseAdapter wrapped){
+		public BoostDemoAdapter(final BaseAdapter wrapped){
 
 			super(wrapped);
 		}
@@ -118,7 +131,9 @@ public class BoostListFragment	extends
 
 		@Override
 		public View
-			getView(int position, View convertView, ViewGroup viewGroup){
+			getView(final int position,
+					View convertView,
+					final ViewGroup viewGroup){
 
 			convertView = super.getView(position,
 										convertView,
