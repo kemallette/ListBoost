@@ -2,6 +2,7 @@ package com.kemallette.ListBoostDemo.Fragment;
 
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +12,15 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.kemallette.ListBoost.List.BoostAdapter;
 import com.kemallette.ListBoost.List.BoostListView;
 import com.kemallette.ListBoost.List.OnSlidingMenuItemClickListener;
 import com.kemallette.ListBoostDemo.R;
-import com.kemallette.ListBoostDemo.Activity.DemoBuilderListener;
 import com.kemallette.ListBoostDemo.Activity.ListFeatureListener;
 
 
 public class BoostListFragment	extends
-								SherlockFragment implements
+								Fragment implements
 												OnSlidingMenuItemClickListener,
 												ListFeatureListener{
 

@@ -3,9 +3,9 @@ package com.kemallette.ListBoostDemo.Activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.kemallette.ListBoostDemo.R;
 import com.kemallette.ListBoostDemo.Fragment.BoostExpandableListFragment;
 import com.kemallette.ListBoostDemo.Fragment.BoostListFragment;
@@ -13,7 +13,7 @@ import com.kemallette.ListBoostDemo.Fragment.BuilderFrag;
 
 
 public class MainActivity	extends
-							SherlockFragmentActivity implements
+							ActionBarActivity implements
 													DemoBuilderListener{
 
 	private static final String	TAG				= "MainActivity";

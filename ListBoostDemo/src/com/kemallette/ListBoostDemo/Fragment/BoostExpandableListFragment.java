@@ -2,6 +2,7 @@ package com.kemallette.ListBoostDemo.Fragment;
 
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.kemallette.ListBoost.ExpandableList.BoostExpandableList;
 import com.kemallette.ListBoost.ExpandableList.BoostExpandableListView;
 import com.kemallette.ListBoost.ExpandableList.ExpandableListCheckListener;
@@ -25,7 +25,7 @@ import com.kemallette.ListBoostDemo.Adapter.ExampleAdapter;
 
 
 public class BoostExpandableListFragment extends
-										SherlockFragment implements
+										Fragment implements
 														ExpandableListCheckListener,
 														OnItemSelectedListener,
 														ListFeatureListener{

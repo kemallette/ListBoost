@@ -6,6 +6,7 @@ import static com.kemallette.ListBoostDemo.Activity.MainActivity.MULTICHOICE;
 import static com.kemallette.ListBoostDemo.Activity.MainActivity.SLIDE;
 import static com.kemallette.ListBoostDemo.Activity.MainActivity.SWIPE;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,13 +16,12 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.kemallette.ListBoostDemo.R;
 import com.kemallette.ListBoostDemo.Activity.DemoBuilderListener;
 import com.kemallette.ListBoostDemo.Activity.MainActivity.ListType;
 
 public class BuilderFrag extends
-						SherlockFragment implements
+						Fragment implements
 										DemoBuilderListener,
 										OnClickListener,
 										android.widget.RadioGroup.OnCheckedChangeListener,
