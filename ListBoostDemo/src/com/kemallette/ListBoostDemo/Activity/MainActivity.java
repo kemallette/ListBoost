@@ -1,6 +1,5 @@
 package com.kemallette.ListBoostDemo.Activity;
 
-
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
@@ -12,28 +11,26 @@ import com.kemallette.ListBoostDemo.Fragment.BoostListFragment;
 import com.kemallette.ListBoostDemo.Fragment.BuilderFrag;
 
 
-public class MainActivity	extends
-							ActionBarActivity implements
-													DemoBuilderListener{
+public class MainActivity extends ActionBarActivity implements DemoBuilderListener{
 
-	private static final String	TAG				= "MainActivity";
+	private static final String	TAG	          = "MainActivity";
 	private static final String	BUILDER_FRAG	= "builderFrag";
 	private static final String	EXP_LIST_FRAG	= "expListFrag";
-	private static final String	LIST_FRAG		= "listFrag";
+	private static final String	LIST_FRAG	  = "listFrag";
 
-	public static final String	SWIPE			= "swipe";
-	public static final String	SLIDE			= "slide";
-	public static final String	DRAGDROP		= "dragdrop";
-	public static final String	MULTICHOICE		= "multichoice";
+	public static final String	SWIPE	      = "swipe";
+	public static final String	SLIDE	      = "slide";
+	public static final String	DRAGDROP	  = "dragdrop";
+	public static final String	MULTICHOICE	  = "multichoice";
 
 	public enum ListType {
 		LISTVIEW,
 		EXPANDABLE_LISTVIEW
 	}
 
-	private BuilderFrag					mBuilderFrag;
+	private BuilderFrag	                mBuilderFrag;
 	private BoostExpandableListFragment	mExpListFrag;
-	private BoostListFragment			mListFrag;
+	private BoostListFragment	        mListFrag;
 
 
 	@Override
@@ -54,8 +51,7 @@ public class MainActivity	extends
 
 
 	@Override
-	public void
-		onStartDemo(final ListType listType, final Bundle features){
+	public void onStartDemo(final ListType listType, final Bundle features){
 
 		if (listType == ListType.LISTVIEW){
 			showListFrag(features);
@@ -70,9 +66,7 @@ public class MainActivity	extends
 		mBuilderFrag = BuilderFrag.newInstance();
 
 		final FragmentTransaction mTransaction = getSupportFragmentManager().beginTransaction();
-		mTransaction.add(	R.id.container,
-							mBuilderFrag,
-							BUILDER_FRAG);
+		mTransaction.add(R.id.container, mBuilderFrag, BUILDER_FRAG);
 		mTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 		mTransaction.commit();
 	}
@@ -81,7 +75,7 @@ public class MainActivity	extends
 	private void showExpandableListFrag(final Bundle features){
 
 		Log.d(TAG, "showing ELV\n multichoiceEnabled?  " + features.getBoolean(MULTICHOICE));
-		
+
 		final FragmentTransaction mTransaction = getSupportFragmentManager().beginTransaction();
 
 		if (mExpListFrag == null){
@@ -90,9 +84,7 @@ public class MainActivity	extends
 		}else
 			mTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 
-		mTransaction.replace(	R.id.container,
-								mExpListFrag,
-								EXP_LIST_FRAG);
+		mTransaction.replace(R.id.container, mExpListFrag, EXP_LIST_FRAG);
 		mTransaction.addToBackStack(null);
 		mExpListFrag.onEnableFeatures(features);
 		mTransaction.commit();
@@ -109,9 +101,7 @@ public class MainActivity	extends
 		}else
 			mTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 
-		mTransaction.replace(	R.id.container,
-								mListFrag,
-								LIST_FRAG);
+		mTransaction.replace(R.id.container, mListFrag, LIST_FRAG);
 		mTransaction.addToBackStack(null);
 
 		mExpListFrag.onEnableFeatures(features);

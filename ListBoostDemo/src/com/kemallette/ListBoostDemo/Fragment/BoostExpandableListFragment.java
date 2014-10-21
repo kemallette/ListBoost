@@ -1,6 +1,5 @@
 package com.kemallette.ListBoostDemo.Fragment;
 
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -214,51 +213,45 @@ public class BoostExpandableListFragment extends
 								childChoiceMode);
 		}
 
-		switch(parent.getId()){
+		int parentId = parent.getId();
+		if (parentId == R.id.groupChoiceModes) {
+			switch(position){
 
-			case R.id.groupChoiceModes:
+				case 0:
+					groupChoiceMode = BoostExpandableList.CHECK_MODE_MULTI;
+					break;
 
-				switch(position){
+				case 1:
+					groupChoiceMode = BoostExpandableList.CHECK_MODE_ONE;
+					break;
 
-					case 0:
-						groupChoiceMode = BoostExpandableList.CHECK_MODE_MULTI;
-						break;
+				case 2:
+					groupChoiceMode = BoostExpandableList.CHECK_MODE_NONE;
+					break;
+			}
+			mList.setGroupChoiceMode(groupChoiceMode);
+			groupModeSpinnerPosition = position;
+		} else if (parentId == R.id.childChoiceModes) {
+			switch(position){
 
-					case 1:
-						groupChoiceMode = BoostExpandableList.CHECK_MODE_ONE;
-						break;
+				case 0:
+					childChoiceMode = BoostExpandableList.CHECK_MODE_MULTI;
+					break;
 
-					case 2:
-						groupChoiceMode = BoostExpandableList.CHECK_MODE_NONE;
-						break;
-				}
-				mList.setGroupChoiceMode(groupChoiceMode);
-				groupModeSpinnerPosition = position;
-				break;
+				case 1:
+					childChoiceMode = BoostExpandableList.CHILD_CHECK_MODE_ONE_PER_GROUP;
+					break;
 
-			case R.id.childChoiceModes:
+				case 2:
+					childChoiceMode = BoostExpandableList.CHECK_MODE_ONE;
+					break;
 
-				switch(position){
-
-					case 0:
-						childChoiceMode = BoostExpandableList.CHECK_MODE_MULTI;
-						break;
-
-					case 1:
-						childChoiceMode = BoostExpandableList.CHILD_CHECK_MODE_ONE_PER_GROUP;
-						break;
-
-					case 2:
-						childChoiceMode = BoostExpandableList.CHECK_MODE_ONE;
-						break;
-
-					case 3:
-						childChoiceMode = BoostExpandableList.CHECK_MODE_NONE;
-						break;
-				}
-				mList.setChildChoiceMode(childChoiceMode);
-				childModeSpinnerPosition = position;
-				break;
+				case 3:
+					childChoiceMode = BoostExpandableList.CHECK_MODE_NONE;
+					break;
+			}
+			mList.setChildChoiceMode(childChoiceMode);
+			childModeSpinnerPosition = position;
 		}
 	}
 

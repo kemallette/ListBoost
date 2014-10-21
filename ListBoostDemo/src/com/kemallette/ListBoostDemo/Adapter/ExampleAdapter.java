@@ -1,6 +1,5 @@
 package com.kemallette.ListBoostDemo.Adapter;
 
-
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,6 +13,7 @@ import android.widget.TextView;
 import com.kemallette.ListBoostDemo.R;
 import com.kemallette.ListBoostDemo.Model.WorldCity;
 import com.kemallette.ListBoostDemo.Util.SeedDataUtil;
+
 
 public class ExampleAdapter	extends
 							BaseExpandableListAdapter{

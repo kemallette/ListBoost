@@ -122,27 +122,19 @@ public class BuilderFrag extends
 	public void onCheckedChanged(final CompoundButton buttonView,
 									final boolean isChecked){
 
-		switch(buttonView.getId()){
-
-			case R.id.swipe:
-				mFeatures.putBoolean(	SWIPE,
-										isChecked);
-				break;
-
-			case R.id.slide:
-				mFeatures.putBoolean(	SLIDE,
-										isChecked);
-				break;
-
-			case R.id.dragdrop:
-				mFeatures.putBoolean(	DRAGDROP,
-										isChecked);
-				break;
-
-			case R.id.multiChoice:
-				mFeatures.putBoolean(	MULTICHOICE,
-										isChecked);
-				break;
+		int id = buttonView.getId();
+		if (id == R.id.swipe) {
+			mFeatures.putBoolean(	SWIPE,
+									isChecked);
+		} else if (id == R.id.slide) {
+			mFeatures.putBoolean(	SLIDE,
+									isChecked);
+		} else if (id == R.id.dragdrop) {
+			mFeatures.putBoolean(	DRAGDROP,
+									isChecked);
+		} else if (id == R.id.multiChoice) {
+			mFeatures.putBoolean(	MULTICHOICE,
+									isChecked);
 		}
 	}
 
