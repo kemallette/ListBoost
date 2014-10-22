@@ -6,7 +6,7 @@
     <!-- List Features -->
     <string name="swipe">Swipe to Reveal</string>
     <string name="slide">Sliding Item Menu</string>
-    <string name="multichoice">Multiple Choice</string>
+    <string name="multichoice">MultiChoice</string>
     <string name="dragdrop">Drag and Drop</string>
     <string name="list_features">Features</string>
 
@@ -42,5 +42,31 @@
 
     <string name="group_mode">Group Mode</string>
     <string name="child_mode">Child Mode</string>
+    <string name="nav_link_welcome_and_instructions">Welcome and Instructions</string>
+    <string name="nav_link_change_log">Change Log</string>
+    <string name="none">None</string>
+    <string name="one">One</string>
+    <string name="multi">Multi</string>
+    <string name="group_choice_modes_heading">Group Choice Modes</string>
+    <string name="one_item_group_or_child_only">One Item (group or child) Only</string>
+    <string name="choice_modes_heading">Choice Modes</string>
+    <string name="feature_options_heading">Feature Options</string>
+    <string name="child_choice_modes_heading">Child Choice Modes</string>
+    <string name="one_per_group_only">One Per Group Only</string>
+    <string name="floating_action_button_fab">Floating Action Button (FAB)</string>
+    <string name="fab_list_scrolling_movement_heading">FAB List Scrolling Movement</string>
+    <string name="hide_on_down_scroll_show_on_up_scroll">Hide on down scroll, show on up scroll</string>
+    <string name="vertical">Vertical</string>
+    <string name="horizontal">Horizontal</string>
+    <string name="fab_menus_heading">FAB Menus</string>
+    <string name="fab_menu_item_count_heading">FAB Menu Item Count</string>
+    <string name="children">Children</string>
+    <string name="groups">Groups</string>
+    <string name="add_to">Add to:</string>
+    <string name="sliding_item_menus">Sliding Item Menus</string>
+    <string name="fab_menu_items">FAB Menu Items</string>
+    <string name="menu_options_count">Menu Options Count</string>
+    <string name="list_item_menu_options_count_heading">List Item Menu Options Count</string>
+    <string name="welcome_and_instructions">Welcome and Instructions</string>
 
 </resources>

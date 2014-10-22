@@ -1,5 +1,7 @@
 package com.kemallette.ListBoostDemo.Model;
 
+import com.kemallette.ListBoostDemo.R;
+
 public class WorldCity{
 	private final int id;
 	private final String name;

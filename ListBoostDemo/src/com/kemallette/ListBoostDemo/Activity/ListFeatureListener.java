@@ -2,6 +2,7 @@ package com.kemallette.ListBoostDemo.Activity;
 
 
 import android.os.Bundle;
+import com.kemallette.ListBoostDemo.R;
 
 
 public interface ListFeatureListener{

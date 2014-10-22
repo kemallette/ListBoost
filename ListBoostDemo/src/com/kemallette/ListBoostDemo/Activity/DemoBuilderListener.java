@@ -3,6 +3,7 @@ package com.kemallette.ListBoostDemo.Activity;
 
 import android.os.Bundle;
 
+import com.kemallette.ListBoostDemo.R;
 import com.kemallette.ListBoostDemo.Activity.MainActivity.ListType;
 
 

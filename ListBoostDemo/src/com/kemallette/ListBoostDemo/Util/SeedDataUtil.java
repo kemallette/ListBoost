@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.kemallette.ListBoostDemo.R;
 import com.kemallette.ListBoostDemo.Model.WorldCity;
 
 import android.content.Context;

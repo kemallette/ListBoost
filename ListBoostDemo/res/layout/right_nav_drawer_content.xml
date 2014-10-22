@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/right_nav_drawer_content"
+    android:layout_width="280dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end"
+    android:background="#efefef" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:id="@+id/elv_options_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="10dp" >
+
+            <!-- Feature Options Heading -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:paddingBottom="10dp"
+                android:text="@string/feature_options_heading"
+                android:textSize="30sp"
+                android:typeface="sans" />
+
+            <!-- ChoiceModes -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/multichoice"
+                android:textSize="20sp"
+                android:typeface="sans" />
+
+            <ToggleButton
+                android:id="@+id/toggle_multichoice"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp" />
+
+            <!-- ChoiceModes Heading -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:text="@string/choice_modes_heading"
+                android:textSize="16sp"
+                android:typeface="sans" />
+
+            <!-- One Item ChoiceMode Toggle -->
+
+            <CheckBox
+                android:id="@+id/toggle_one_item_only"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/one_item_group_or_child_only" />
+
+            <!-- Group Item ChoiceModes Heading -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:text="@string/group_choice_modes_heading"
+                android:textSize="16sp"
+                android:typeface="sans" />
+
+            <!-- Group Item ChoiceModes Radio Group -->
+
+            <RadioGroup
+                android:id="@+id/group_choice_modes_radios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical" >
+
+                <RadioButton
+                    android:id="@+id/group_multichoice_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:checked="true"
+                    android:text="@string/multi" />
+
+                <RadioButton
+                    android:id="@+id/group_one_choice_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/one" />
+
+                <RadioButton
+                    android:id="@+id/group_no_choice_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/none" />
+            </RadioGroup>
+
+            <!-- Child Item ChoiceModes Heading -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:text="@string/child_choice_modes_heading"
+                android:textSize="16sp"
+                android:typeface="sans" />
+
+            <!-- Child Item ChoiceModes Radio Group -->
+
+            <RadioGroup
+                android:id="@+id/child_choice_modes_radios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical" >
+
+                <RadioButton
+                    android:id="@+id/child_multichoice_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:checked="true"
+                    android:text="@string/multi" />
+
+                <RadioButton
+                    android:id="@+id/child_one_per_group_choice_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/one_per_group_only" />
+
+                <RadioButton
+                    android:id="@+id/child_one_choice_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/one" />
+
+                <RadioButton
+                    android:id="@+id/child_no_choice_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/none" />
+            </RadioGroup>
+
+            <!-- Item Sliding Menus -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/sliding_item_menus"
+                android:textSize="20sp"
+                android:typeface="sans" />
+
+            <ToggleButton
+                android:id="@+id/toggle_sliding_item_menus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:text="@string/add_to"
+                android:textSize="16sp"
+                android:typeface="sans" />
+
+            <CheckBox
+                android:id="@+id/toggle_group_sliding_menus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/groups" />
+
+            <CheckBox
+                android:id="@+id/toggle_child_sliding_menus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/children" />
+
+            <!-- List Item Menu Options Count -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:text="@string/list_item_menu_options_count_heading"
+                android:textSize="16sp"
+                android:typeface="sans" />
+
+            <Spinner
+                android:id="@+id/list_item_menu_options_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:prompt="@string/menu_options_count" />
+
+            <!-- FAB -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/floating_action_button_fab"
+                android:textSize="20sp"
+                android:typeface="sans" />
+
+            <ToggleButton
+                android:id="@+id/toggle_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp" />
+
+            <!-- FAB List Scrolling Movement Heading -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:text="@string/fab_list_scrolling_movement_heading"
+                android:textSize="16sp"
+                android:typeface="sans" />
+
+            <CheckBox
+                android:id="@+id/move_fab_on_scroll_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hide_on_down_scroll_show_on_up_scroll" />
+
+            <!-- Expanding FAB Menu Heading -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:text="@string/fab_menus_heading"
+                android:textSize="16sp"
+                android:typeface="sans" />
+
+            <!-- Fab Menu Direction Radios -->
+
+            <RadioGroup
+                android:id="@+id/fab_menu_direction_radios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical" >
+
+                <RadioButton
+                    android:id="@+id/fab_menu_vertical_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:checked="true"
+                    android:text="@string/vertical" />
+
+                <RadioButton
+                    android:id="@+id/fab_menu_horizontal_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/horizontal" />
+            </RadioGroup>
+
+            <!-- FAB Menu Item Count -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:text="@string/fab_menu_item_count_heading"
+                android:textSize="16sp"
+                android:typeface="sans" />
+
+            <Spinner
+                android:id="@+id/fab_menu_items_count_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:prompt="@string/fab_menu_items" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/elv_options_layout"
+            android:scaleType="fitXY"
+            android:src="@drawable/drawer_shadow" />
+    </RelativeLayout>
+
+</ScrollView>

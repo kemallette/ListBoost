@@ -134,7 +134,7 @@ public class BoostExpandableListFragment extends
 		mAdapter = new ExampleAdapter(getActivity());
 		mList.setAdapter(mAdapter);
 
-		initChoiceModeOptions();
+//		initChoiceModeOptions();
 	}
 
 
@@ -205,54 +205,54 @@ public class BoostExpandableListFragment extends
 								final int position,
 								final long id){
 
-		onlyOneItem.setChecked(false);
-
-		if (!mList.isChoiceOn()){
-			mChoiceOptions.setVisibility(View.VISIBLE);
-			mList.enableChoice(	groupChoiceMode,
-								childChoiceMode);
-		}
-
-		int parentId = parent.getId();
-		if (parentId == R.id.groupChoiceModes) {
-			switch(position){
-
-				case 0:
-					groupChoiceMode = BoostExpandableList.CHECK_MODE_MULTI;
-					break;
-
-				case 1:
-					groupChoiceMode = BoostExpandableList.CHECK_MODE_ONE;
-					break;
-
-				case 2:
-					groupChoiceMode = BoostExpandableList.CHECK_MODE_NONE;
-					break;
-			}
-			mList.setGroupChoiceMode(groupChoiceMode);
-			groupModeSpinnerPosition = position;
-		} else if (parentId == R.id.childChoiceModes) {
-			switch(position){
-
-				case 0:
-					childChoiceMode = BoostExpandableList.CHECK_MODE_MULTI;
-					break;
-
-				case 1:
-					childChoiceMode = BoostExpandableList.CHILD_CHECK_MODE_ONE_PER_GROUP;
-					break;
-
-				case 2:
-					childChoiceMode = BoostExpandableList.CHECK_MODE_ONE;
-					break;
-
-				case 3:
-					childChoiceMode = BoostExpandableList.CHECK_MODE_NONE;
-					break;
-			}
-			mList.setChildChoiceMode(childChoiceMode);
-			childModeSpinnerPosition = position;
-		}
+//		onlyOneItem.setChecked(false);
+//
+//		if (!mList.isChoiceOn()){
+//			mChoiceOptions.setVisibility(View.VISIBLE);
+//			mList.enableChoice(	groupChoiceMode,
+//								childChoiceMode);
+//		}
+//
+//		int parentId = parent.getId();
+//		if (parentId == R.id.groupChoiceModes) {
+//			switch(position){
+//
+//				case 0:
+//					groupChoiceMode = BoostExpandableList.CHECK_MODE_MULTI;
+//					break;
+//
+//				case 1:
+//					groupChoiceMode = BoostExpandableList.CHECK_MODE_ONE;
+//					break;
+//
+//				case 2:
+//					groupChoiceMode = BoostExpandableList.CHECK_MODE_NONE;
+//					break;
+//			}
+//			mList.setGroupChoiceMode(groupChoiceMode);
+//			groupModeSpinnerPosition = position;
+//		} else if (parentId == R.id.childChoiceModes) {
+//			switch(position){
+//
+//				case 0:
+//					childChoiceMode = BoostExpandableList.CHECK_MODE_MULTI;
+//					break;
+//
+//				case 1:
+//					childChoiceMode = BoostExpandableList.CHILD_CHECK_MODE_ONE_PER_GROUP;
+//					break;
+//
+//				case 2:
+//					childChoiceMode = BoostExpandableList.CHECK_MODE_ONE;
+//					break;
+//
+//				case 3:
+//					childChoiceMode = BoostExpandableList.CHECK_MODE_NONE;
+//					break;
+//			}
+//			mList.setChildChoiceMode(childChoiceMode);
+//			childModeSpinnerPosition = position;
+//		}
 	}
 
 
@@ -262,34 +262,34 @@ public class BoostExpandableListFragment extends
 
 	}
 
-
-	private void initChoiceModeOptions(){
-
-		mChoiceOptions = (LinearLayout) getView().findViewById(R.id.choice_options_layout);
-
-		groupChoiceModes = (Spinner) mChoiceOptions.findViewById(R.id.groupChoiceModes);
-		childChoiceModes = (Spinner) mChoiceOptions.findViewById(R.id.childChoiceModes);
-
-		groupChoiceModes.setOnItemSelectedListener(this);
-		childChoiceModes.setOnItemSelectedListener(this);
-
-		onlyOneItem = (ToggleButton) mChoiceOptions.findViewById(R.id.onlyOneItem);
-		onlyOneItem.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-
-			@Override
-			public void onCheckedChanged(final CompoundButton buttonView,
-											final boolean isChecked){
-
-				mList.enableOnlyOneItemChoice(isChecked);
-				groupChoiceModes.setSelection(2); // 2 is position for
-													// CHECK_MODE_NONE
-				childChoiceModes.setSelection(3); // 3 is position for
-													// CHECK_MODE_NONE
-
-			}
-		});
-
-	}
+//
+//	private void initChoiceModeOptions(){
+//
+//		mChoiceOptions = (LinearLayout) getView().findViewById(R.id.choice_options_layout);
+//
+//		groupChoiceModes = (Spinner) mChoiceOptions.findViewById(R.id.groupChoiceModes);
+//		childChoiceModes = (Spinner) mChoiceOptions.findViewById(R.id.childChoiceModes);
+//
+//		groupChoiceModes.setOnItemSelectedListener(this);
+//		childChoiceModes.setOnItemSelectedListener(this);
+//
+//		onlyOneItem = (ToggleButton) mChoiceOptions.findViewById(R.id.onlyOneItem);
+//		onlyOneItem.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+//
+//			@Override
+//			public void onCheckedChanged(final CompoundButton buttonView,
+//											final boolean isChecked){
+//
+//				mList.enableOnlyOneItemChoice(isChecked);
+//				groupChoiceModes.setSelection(2); // 2 is position for
+//													// CHECK_MODE_NONE
+//				childChoiceModes.setSelection(3); // 3 is position for
+//													// CHECK_MODE_NONE
+//
+//			}
+//		});
+//
+//	}
 
 
 	private void extractFeatures(final Bundle features){
