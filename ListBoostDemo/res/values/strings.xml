@@ -11,7 +11,7 @@
     <string name="list_features">Features</string>
 
     <!-- Welcome Message -->
-    <string name="welcome">Welcome to the ListBoost Demo app. To get started, first choose the type of list (ListView or ExpandableListView)you would like to demo. Then, check each feature you would like your demo list to implement. Once you are happy with your list type and feature set, tap the Start Demo button.</string>
+    <string name="welcome">Welcome!</string>
 
     <!-- List Types -->
     <string name="listview">ListView</string>
@@ -68,5 +68,9 @@
     <string name="menu_options_count">Menu Options Count</string>
     <string name="list_item_menu_options_count_heading">List Item Menu Options Count</string>
     <string name="welcome_and_instructions">Welcome and Instructions</string>
+    <string name="to_start_exploring">To Start Exploring</string>
+    <string name="starting_instructions">&lt;ul>&lt;li>Open the &lt;b>left&lt;/b> nav drawer and select the type of list and features for that list you would like to demo.&lt;/li>&lt;li>Tap the &lt;pre>Start Demo&lt;/pre> button to launch the demo with the list type and features you selected.&lt;/li>&lt;/ul></string>
+    <string name="toggling_feature_options_instructions">&lt;ul>&lt;li>Once you\'ve launched your demo, open the &lt;b>right&lt;/b> nav drawer to expose controls for your demo list feature options.&lt;li>Using the right nav drawer controls, you can enable and disable features as well as set the various feature options for your list.&lt;/li>&lt;/ul></string>
+    <string name="toggling_feature_options">Toggling Feature Options</string>
 
 </resources>
