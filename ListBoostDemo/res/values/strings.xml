@@ -42,7 +42,7 @@
 
     <string name="group_mode">Group Mode</string>
     <string name="child_mode">Child Mode</string>
-    <string name="nav_link_welcome_and_instructions">Welcome and Instructions</string>
+    <string name="nav_link_welcome_and_instructions">Welcome</string>
     <string name="nav_link_change_log">Change Log</string>
     <string name="none">None</string>
     <string name="one">One</string>
@@ -52,25 +52,27 @@
     <string name="choice_modes_heading">Choice Modes</string>
     <string name="feature_options_heading">Feature Options</string>
     <string name="child_choice_modes_heading">Child Choice Modes</string>
-    <string name="one_per_group_only">One Per Group Only</string>
+    <string name="one_per_group">One Per Group</string>
     <string name="floating_action_button_fab">Floating Action Button (FAB)</string>
     <string name="fab_list_scrolling_movement_heading">FAB List Scrolling Movement</string>
     <string name="hide_on_down_scroll_show_on_up_scroll">Hide on down scroll, show on up scroll</string>
     <string name="vertical">Vertical</string>
     <string name="horizontal">Horizontal</string>
-    <string name="fab_menus_heading">FAB Menus</string>
+    <string name="fab_menus_heading">FAB Menu Open Direction</string>
     <string name="fab_menu_item_count_heading">FAB Menu Item Count</string>
-    <string name="children">Children</string>
-    <string name="groups">Groups</string>
-    <string name="add_to">Add to:</string>
+    <string name="children">Add to children</string>
+    <string name="groups">Add to groups</string>
     <string name="sliding_item_menus">Sliding Item Menus</string>
     <string name="fab_menu_items">FAB Menu Items</string>
     <string name="menu_options_count">Menu Options Count</string>
     <string name="list_item_menu_options_count_heading">List Item Menu Options Count</string>
     <string name="welcome_and_instructions">Welcome and Instructions</string>
     <string name="to_start_exploring">To Start Exploring</string>
-    <string name="starting_instructions">&lt;ul>&lt;li>Open the &lt;b>left&lt;/b> nav drawer and select the type of list and features for that list you would like to demo.&lt;/li>&lt;li>Tap the &lt;pre>Start Demo&lt;/pre> button to launch the demo with the list type and features you selected.&lt;/li>&lt;/ul></string>
-    <string name="toggling_feature_options_instructions">&lt;ul>&lt;li>Once you\'ve launched your demo, open the &lt;b>right&lt;/b> nav drawer to expose controls for your demo list feature options.&lt;li>Using the right nav drawer controls, you can enable and disable features as well as set the various feature options for your list.&lt;/li>&lt;/ul></string>
+    <string name="starting_instructions">Open the &lt;b>left&lt;/b> nav drawer and tap the list, BoostListView or BoostExpandableListView, you would like to demo.</string>
+    <string name="toggling_feature_options_instructions">Once you\'ve launched your demo, open the &lt;b>right&lt;/b> nav drawer to expose controls for your demo list feature options. Using the right nav drawer controls, you can enable and disable features as well as set the various feature options for your list.</string>
     <string name="toggling_feature_options">Toggling Feature Options</string>
+    <string name="boostlistview">BoostListView</string>
+    <string name="boostexpandablelistview">BoostExpandableListView</string>
+    <string name="check_children_on_group_check">Check children on group check</string>
 
 </resources>

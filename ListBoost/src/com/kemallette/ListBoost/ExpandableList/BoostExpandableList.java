@@ -58,7 +58,7 @@ public interface BoostExpandableList{
 	 * Only one child item per group can be checked at a time. You cannot use
 	 * this and set checkChildrenWithGroup to true.
 	 */
-	public static final int	CHILD_CHECK_MODE_ONE_PER_GROUP	= 14;
+	public static final int	CHECK_MODE_ONE_CHILD_PER_GROUP	= 14;
 
 	/**
 	 * Group and child choice modes are automatically set to this if one item

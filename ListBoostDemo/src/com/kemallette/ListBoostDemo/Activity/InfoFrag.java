@@ -1,4 +1,4 @@
-package com.kemallette.ListBoostDemo.Fragment;
+package com.kemallette.ListBoostDemo.Activity;
 
 
 import android.os.Bundle;

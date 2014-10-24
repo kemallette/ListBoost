@@ -1,53 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/left_nav_drawer_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="start" >
 
-    <LinearLayout
-        android:id="@+id/content_container"
-        android:layout_width="280dp"
-        android:layout_height="match_parent"
-        android:background="#efefef"
-        android:orientation="vertical"
-        android:paddingTop="10dp" >
-
-        <TextView
-            android:id="@+id/welcome"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:clickable="true"
-            android:padding="10dp"
-            android:text="@string/nav_link_welcome_and_instructions"
-            android:textSize="16sp"
-            android:typeface="sans" />
-
-        <TextView
-            android:id="@+id/changelog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:clickable="true"
-            android:padding="10dp"
-            android:text="@string/nav_link_change_log"
-            android:textSize="16sp"
-            android:typeface="sans" />
-
-        <com.kemallette.ListBoost.ExpandableList.BoostExpandableListView
-            android:id="@+id/list"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/content_container"
+            android:layout_width="280dp"
             android:layout_height="match_parent"
-            android:groupIndicator="@drawable/expander_group_holo_light" />
-    </LinearLayout>
+            android:background="#efefef"
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:gravity="end" >
 
-    <ImageView
-        android:layout_width="10dp"
-        android:layout_height="fill_parent"
-        android:layout_toRightOf="@+id/content_container"
-        android:scaleType="fitXY"
-        android:src="@drawable/drawer_shadow" />
+            <TextView
+                android:id="@+id/welcome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:padding="10dp"
+                android:text="@string/nav_link_welcome_and_instructions"
+                android:textSize="22sp"
+                android:typeface="sans" />
 
-</RelativeLayout>
+            <TextView
+                android:id="@+id/list_view_nav_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:padding="10dp"
+                android:text="@string/boostlistview"
+                android:textSize="22sp"
+                android:typeface="sans" />
+
+            <TextView
+                android:id="@+id/expandable_list_view_nav_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:padding="10dp"
+                android:text="@string/boostexpandablelistview"
+                android:textSize="22sp"
+                android:typeface="sans" />
+            
+        </LinearLayout>
+</LinearLayout>

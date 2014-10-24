@@ -36,7 +36,7 @@ public class BoostExpandableListView extends
 	 */
 	private boolean						ignoreCheckChange		= false;
 	private boolean						isOneItemChoice			= false;
-	private boolean						isChoiceOn				= true;
+	private boolean						isChoiceOn				= false;
 	/**
 	 * If true, on a group check change, that group's children will match the
 	 * group's check state. In other words, if you check a group, all its
@@ -46,8 +46,8 @@ public class BoostExpandableListView extends
 	private boolean						checkChildrenWithGroup	= false;
 
 
-	private int							groupChoiceMode			= CHECK_MODE_MULTI;
-	private int							childChoiceMode			= CHECK_MODE_MULTI;
+	private int							groupChoiceMode			= CHECK_MODE_NONE;
+	private int							childChoiceMode			= CHECK_MODE_NONE;
 
 	private CheckStateStore				mCheckStore;
 	private ExpandableListCheckListener	mClientCheckListener;
@@ -71,10 +71,10 @@ public class BoostExpandableListView extends
 																		0);
 
 			groupChoiceMode = a.getInt(	R.styleable.BoostExpandableListView_groupChoiceMode,
-										CHECK_MODE_MULTI);
+										CHECK_MODE_NONE);
 
 			childChoiceMode = a.getInt(	R.styleable.BoostExpandableListView_childChoiceMode,
-										CHECK_MODE_MULTI);
+										CHECK_MODE_NONE);
 
 			checkChildrenWithGroup = a.getBoolean(	R.styleable.BoostExpandableListView_checkChildrenWithGroup,
 													false);
@@ -82,11 +82,10 @@ public class BoostExpandableListView extends
 			isOneItemChoice = a.getBoolean(	R.styleable.BoostExpandableListView_oneItemChoice,
 											false);
 
-			// default on instantiation is true so if both modes are NONE we
-			// need to set to false
-			if (groupChoiceMode == CHECK_MODE_NONE
-				&& childChoiceMode == CHECK_MODE_NONE)
-				isChoiceOn = false;
+			// Check to see if the user enabled a choice mode (check mode constants are just integers
+			if (groupChoiceMode > CHECK_MODE_NONE
+				|| childChoiceMode > CHECK_MODE_NONE)
+				isChoiceOn = true;
 
 
 			if (isOneItemChoice){
@@ -674,7 +673,7 @@ public class BoostExpandableListView extends
 				clearChildren();
 				break;
 
-			case CHILD_CHECK_MODE_ONE_PER_GROUP:
+			case CHECK_MODE_ONE_CHILD_PER_GROUP:
 				clearChildren(groupPosition);
 				break;
 		}

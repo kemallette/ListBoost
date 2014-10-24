@@ -44,8 +44,7 @@ public class ExampleAdapter	extends
 	@Override
 	public int getGroupCount(){
 
-		return mData.keySet()
-					.size();
+		return mData.keySet().size();
 	}
 
 

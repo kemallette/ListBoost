@@ -1,4 +1,4 @@
-package com.kemallette.ListBoostDemo.Fragment;
+package com.kemallette.ListBoostDemo.Activity;
 
 
 import static com.kemallette.ListBoostDemo.Activity.MainActivity.DRAGDROP;
@@ -17,12 +17,9 @@ import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 
 import com.kemallette.ListBoostDemo.R;
-import com.kemallette.ListBoostDemo.Activity.DemoBuilderListener;
-import com.kemallette.ListBoostDemo.Activity.MainActivity.ListType;
 
 public class BuilderFrag extends
 						Fragment implements
-										DemoBuilderListener,
 										OnClickListener,
 										android.widget.RadioGroup.OnCheckedChangeListener,
 										android.widget.CompoundButton.OnCheckedChangeListener{
@@ -31,9 +28,6 @@ public class BuilderFrag extends
 
 
 	private Bundle				mFeatures	= new Bundle();
-
-	private ListType			mListType;
-
 
 	private CheckBox			mSlideBox;
 	private CheckBox			mSwipeBox;
@@ -101,20 +95,8 @@ public class BuilderFrag extends
 
 
 	@Override
-	public void
-		onStartDemo(final ListType listType, final Bundle mDemoFeatures){
-
-		((DemoBuilderListener) getActivity()).onStartDemo(	listType,
-															mDemoFeatures);
-	}
-
-
-	@Override
 	public void onClick(final View v){
 
-		if (v.getId() == R.id.startDemo)
-			onStartDemo(mListType,
-						mFeatures);
 	}
 
 
@@ -140,12 +122,7 @@ public class BuilderFrag extends
 
 
 	@Override
-	public void onCheckedChanged(final RadioGroup group, final int checkedId){
-
-		if (group.getId() == R.id.listTypeGroup)
-			mListType = (checkedId == R.id.listRadio)	? ListType.LISTVIEW
-														: ListType.EXPANDABLE_LISTVIEW;
-	}
+	public void onCheckedChanged(final RadioGroup group, final int checkedId){}
 
 
 	private void initViews(){
