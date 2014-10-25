@@ -15,10 +15,18 @@ import com.kemallette.ListBoost.ExpandableList.ExpandableListCheckListener;
 import com.kemallette.ListBoostDemo.R;
 import com.kemallette.ListBoostDemo.Activity.MainActivity.CheckChildrenWithGroupToggleEvent;
 import com.kemallette.ListBoostDemo.Activity.MainActivity.ChildChoiceModeChangeEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.ChildItemMenusToggleEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.EnableFabMenuToggleEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.EnableFabToggleEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.EnableMultiChoiceToggleEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.EnableSlidingItemMenuToggleEvent;
 import com.kemallette.ListBoostDemo.Activity.MainActivity.ExpandableListOneItemOnlyToggleEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.FabMenuDirectionChangeEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.FabScrollModeToggleEvent;
 import com.kemallette.ListBoostDemo.Activity.MainActivity.GroupChoiceModeChangeEvent;
-import com.kemallette.ListBoostDemo.Activity.MainActivity.MultiChoiceToggleEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.GroupItemMenusToggleEvent;
 import com.kemallette.ListBoostDemo.Adapter.ExampleAdapter;
+import com.kemallette.ListBoostDemo.Fab.FloatingActionButton;
 
 import de.greenrobot.event.EventBus;
 
@@ -27,11 +35,20 @@ public class BoostExpandableListFragment extends Fragment implements ExpandableL
 
 	private static final String	    TAG	            = "BoostExpandableListFrag";
 
+	
+	private boolean fabScrollingEnabled = false,
+					fabMenuEnabled = false,
+					fabEnabled = false;
+	
+	private boolean isOneItemChoiceOnlyEnabled = false,
+					 checkChildrenWithGroup = false;
+	
 	private int	                    childChoiceMode	=
 	                                                  BoostExpandableList.CHECK_MODE_MULTI;
 	private int	                    groupChoiceMode	=
 	                                                  BoostExpandableList.CHECK_MODE_MULTI;
 
+	private FloatingActionButton    mFab;
 	private BoostExpandableListView	mList;
 	private ExampleAdapter	        mAdapter;
 
@@ -47,7 +64,8 @@ public class BoostExpandableListFragment extends Fragment implements ExpandableL
 
 		super.onCreate(savedInstanceState);
 		
-		EventBus.getDefault().register(this);
+		if(!EventBus.getDefault().isRegistered(this))
+			EventBus.getDefault().register(this);
 	}
 
 
@@ -78,6 +96,8 @@ public class BoostExpandableListFragment extends Fragment implements ExpandableL
 		mList = (BoostExpandableListView) getView().findViewById(R.id.list);
 		mList.setExpandableCheckListener(this);
 
+		mFab = (FloatingActionButton) getView().findViewById(R.id.fab);
+		
 		mAdapter = new ExampleAdapter(getActivity());
 		mList.setAdapter(mAdapter);
 	}
@@ -130,13 +150,23 @@ public class BoostExpandableListFragment extends Fragment implements ExpandableL
 	 * EventBus event listeners
 	 * 
 	 ************************************************************/
+
+	
+	/******************************************
+	* MultiChoice Events
+	*****************************************/
 	
 	// Enable/Disable MultiChoice
-	public void onEvent(MultiChoiceToggleEvent event){
+	public void onEvent(EnableMultiChoiceToggleEvent event){
 
 		if (event.toggled){ // Enable MultiChoice
 			mList.enableChoice(groupChoiceMode,
 			                   childChoiceMode);
+			if(isOneItemChoiceOnlyEnabled) {
+				mList.enableOnlyOneItemChoice(isOneItemChoiceOnlyEnabled);
+			}else if(checkChildrenWithGroup) {
+				mList.checkChildrenWithGroup(checkChildrenWithGroup);
+			}
 		}else{
 			mList.disableChoice();
 		}
@@ -144,13 +174,26 @@ public class BoostExpandableListFragment extends Fragment implements ExpandableL
 	
 	// Enable/Disable Checking Children on Parent Group Check
 	public void onEvent(CheckChildrenWithGroupToggleEvent event){
+		
+		checkChildrenWithGroup = event.toggled;
+		
 		if(event.toggled != mList.checkChildrenWithGroup())
 			mList.checkChildrenWithGroup(event.toggled);
 	}
 	
 	public void onEvent(ExpandableListOneItemOnlyToggleEvent event){
-		if(event.toggled != mList.isOneItemChoiceOn())
-			mList.enableOnlyOneItemChoice(event.toggled);
+		
+		isOneItemChoiceOnlyEnabled = event.toggled;
+		
+		if(isOneItemChoiceOnlyEnabled)
+			mList.enableOnlyOneItemChoice(true);
+		
+		if(!isOneItemChoiceOnlyEnabled) {
+			mList.enableChoice(groupChoiceMode, childChoiceMode);
+			if(checkChildrenWithGroup) {
+				mList.checkChildrenWithGroup(checkChildrenWithGroup);
+			}
+		}
 	}
 	
 	// Set Group Items Choice Mode
@@ -185,4 +228,70 @@ public class BoostExpandableListFragment extends Fragment implements ExpandableL
 				break;
 		}
 	}
+	
+	
+	/******************************************
+	* Sliding Item Menu Events
+	*****************************************/
+	public void onEvent(EnableSlidingItemMenuToggleEvent event) {
+		//TODO
+	}
+	
+	public void onEvent(GroupItemMenusToggleEvent event) {
+		//TODO
+	}
+
+
+	public void onEvent(ChildItemMenusToggleEvent event) {
+		//TODO
+	}
+
+	
+	/******************************************
+	* FAB Events
+	*****************************************/
+
+	public void onEvent(EnableFabToggleEvent event) {
+		
+		fabEnabled = event.toggled;
+		
+		if(fabEnabled) {
+    		mFab.setVisibility(View.VISIBLE);
+    		if(fabScrollingEnabled) {
+    			mFab.respondTo(mList);
+    		}else {
+    			mFab.disableScrolling();
+    		}
+    		// TODO: Blocked by fab menu implementation: if(fabMenuEnabled) mFab.enableMenu(); 
+    	}else {
+    		mFab.setVisibility(View.INVISIBLE);
+    		fabEnabled = false;
+    	}
+	}
+	
+	
+	public void onEvent(EnableFabMenuToggleEvent event) {
+    	fabMenuEnabled = event.toggled;
+    	//TODO: Blocked by fab menu implementation
+	}
+	
+    public void onEvent(FabScrollModeToggleEvent event) {
+    	
+    	if(fabScrollingEnabled != event.toggled)
+    		fabScrollingEnabled = event.toggled;
+
+    	if(fabScrollingEnabled) {
+    		mFab.respondTo(mList);
+    	}else {
+    		mFab.disableScrolling();
+    	}
+    }  
+
+
+    public void onEvent(FabMenuDirectionChangeEvent event) {
+    	//TODO: Blocked by FAB menu implementation
+	}
+    
+
+      
 }

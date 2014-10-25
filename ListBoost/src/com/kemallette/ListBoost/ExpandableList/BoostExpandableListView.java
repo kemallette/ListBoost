@@ -363,7 +363,6 @@ public class BoostExpandableListView extends
 			refreshVisibleItems();
 		}
 
-
 		return this;
 	}
 

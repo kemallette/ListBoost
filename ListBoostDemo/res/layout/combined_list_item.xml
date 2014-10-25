@@ -9,7 +9,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="65dp"
         android:gravity="center_vertical|left" >
 
         <CheckBox
@@ -27,61 +27,88 @@
             android:layout_alignParentTop="true"
             android:background="#00FFFFFF"
             android:drawableRight="@drawable/ic_more_corner_arrow"
-            android:focusable="false" />
+            android:focusable="false"
+            android:visibility="invisible"/>
 
         <TextView
             android:id="@android:id/text1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:textSize="24sp"
             android:layout_toLeftOf="@+id/slide_toggle_button"
             android:layout_toRightOf="@android:id/checkbox"
-            android:text="This is just test text. Say that ten times fast."
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" >
+            android:paddingLeft="8dp"
+            android:text="This is just test text"
+            android:textColor="#666" >
         </TextView>
     </RelativeLayout>
 
     <HorizontalScrollView
         android:id="@+id/sliding_view_id"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="fill|center_horizontal" >
+        android:layout_height="55dp"
+        android:layout_gravity="fill|center_horizontal"
+        android:background="#dfdfdf"
+        android:visibility="gone" >
 
-        <LinearLayout
+        <TableLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
-            android:orientation="horizontal" >
+            android:orientation="vertical" >
 
-            <Button
-                android:id="@+id/b1"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:focusable="false"
-                android:text="Tap me!" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@drawable/drop_shadow_linear" />
 
-            <Button
-                android:id="@+id/b2"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:focusable="false"
-                android:text="Or me!" />
+            <TableRow>
 
-            <Button
-                android:id="@+id/b3"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:focusable="false"
-                android:text="Please?" />
+                <Button
+                    android:id="@+id/b1"
+                    android:layout_width="100dp"
+                    android:layout_height="45dp"
+                    android:layout_marginLeft="20dp"
+                    android:focusable="false"
+                    android:text="Tap me!" />
 
-            <Button
-                android:id="@+id/b4"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:focusable="false"
-                android:text="Last chance!" />
-        </LinearLayout>
+                <Button
+                    android:id="@+id/b2"
+                    android:layout_width="100dp"
+                    android:layout_height="45dp"
+                    android:focusable="false"
+                    android:text="Or me!" />
+
+                <Button
+                    android:id="@+id/b3"
+                    android:layout_width="100dp"
+                    android:layout_height="45dp"
+                    android:focusable="false"
+                    android:text="Please?" />
+
+                <Button
+                    android:id="@+id/b4"
+                    android:layout_width="100dp"
+                    android:layout_height="45dp"
+                    android:focusable="false"
+                    android:text="Maybe me?" />
+
+                <Button
+                    android:id="@+id/b5"
+                    android:layout_width="100dp"
+                    android:layout_height="45dp"
+                    android:focusable="false"
+                    android:text="Really :(" />
+
+                <Button
+                    android:id="@+id/b6"
+                    android:layout_width="100dp"
+                    android:layout_height="45dp"
+                    android:focusable="false"
+                    android:text="Last chance!" />
+            </TableRow>
+        </TableLayout>
     </HorizontalScrollView>
 
 </LinearLayout>

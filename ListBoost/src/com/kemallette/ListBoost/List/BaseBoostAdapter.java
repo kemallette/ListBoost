@@ -22,36 +22,53 @@ import android.widget.WrapperListAdapter;
 import com.kemallette.ListBoost.R;
 import com.kemallette.ListBoost.Util.ExpandCollapseAnimation;
 
-public abstract class BaseBoostAdapter	extends
-										BaseAdapter	implements
-													WrapperListAdapter{
+public abstract class BaseBoostAdapter extends BaseAdapter implements WrapperListAdapter{
 
-	private static final String					TAG					= "BaseBoostAdapter";
+	private static final String	TAG	= "BaseBoostAdapter";
+
+	static class ViewHolder{
+
+		View	mSlideOpenToggle;
 
 
-	protected boolean							isSlidingEnabled;
-	protected boolean							isSwipeRevealEnabled;
-	protected boolean							isDragSortEnabled;
-	protected boolean							isMultipleChoiceEnabled;
+		private ViewHolder(){
+		}
+		
+		static ViewHolder getInstance(){
+			if(mHolder == null)
+				mHolder = new ViewHolder();
+			return mHolder;
+		}
+	}
+	
+	private static ViewHolder	             mHolder;
+	
+
+	protected boolean	                     isSlidingEnabled;
+	protected boolean	                     isSwipeRevealEnabled;
+	protected boolean	                     isDragSortEnabled;
+	protected boolean	                     isMultipleChoiceEnabled;
 
 	/**
 	 * The position of the last expanded list item. If -1 there is no list item
 	 * expanded. Otherwise it points to the position of the last expanded list
 	 * item
 	 */
-	private int									lastOpenPosition	= -1;
+	private int	                             lastOpenPosition	= -1;
 
-	protected int								slideToggleId		= R.id.slide_toggle_button;
-	protected int								slidingViewId		= R.id.sliding_view_id;
-	protected int[]								slidingViewButtonIds;
-	protected OnSlidingMenuItemClickListener	mActionListener;
+	protected int	                         slideToggleId	  =
+	                                                            R.id.slide_toggle_button;
+	protected int	                         slidingViewId	  =
+	                                                            R.id.sliding_view_id;
+	protected int[]	                         slidingViewButtonIds;
+	protected OnSlidingMenuItemClickListener	mMenuItemClickListener;
 
 
 	/**
 	 * Reference to the last expanded list item. Since lists are recycled this
 	 * might be null if though there is an expanded list item
 	 */
-	private View								lastOpen			= null;
+	private View	                         lastOpen	      = null;
 
 	/**
 	 * A list of positions of all list items that are expanded. Normally only
@@ -59,17 +76,18 @@ public abstract class BaseBoostAdapter	extends
 	 * 
 	 * If an item on position x is open, its bit is set
 	 */
-	private BitSet								openItems			= new BitSet();
+	private BitSet	                         openItems	      = new BitSet();
 
 	/**
 	 * We remember, for each collapsable view its height. So we dont need to
 	 * recalculate. The height is calculated just before the view is drawn.
 	 */
-	private final SparseIntArray				viewHeights			= new SparseIntArray(10);
+	private final SparseIntArray	         viewHeights	  =
+	                                                            new SparseIntArray(10);
 
-	private ViewGroup							parent;
+	private ViewGroup	                     parent;
 
-	protected final BaseAdapter					wrapped;
+	protected final BaseAdapter	             wrapped;
 
 
 	public BaseBoostAdapter(BaseAdapter wrapped){
@@ -81,49 +99,57 @@ public abstract class BaseBoostAdapter	extends
 
 
 	@Override
-	public View
-		getView(int position, View convertView, ViewGroup viewGroup){
+	public View getView(int position, View convertView, ViewGroup viewGroup){
 
 		this.parent = viewGroup;
 
-		convertView = wrapped.getView(	position,
-										convertView,
-										viewGroup);
+		convertView = wrapped.getView(position,
+		                              convertView,
+		                              viewGroup);
 
-		if (isSlidingEnabled
-			&& convertView != null)
-			setupSlidingMenu(	convertView,
-								position);
+		mHolder = (ViewHolder) convertView.getTag();
+		if (mHolder == null){
+			mHolder = ViewHolder.getInstance();
+			mHolder.mSlideOpenToggle = convertView.findViewById(slideToggleId);
+			convertView.setTag(mHolder);
+		}
+
+		if (isSlidingEnabled){
+			if (mHolder.mSlideOpenToggle.getVisibility() != View.VISIBLE)
+				mHolder.mSlideOpenToggle.setVisibility(View.VISIBLE);
+			setupSlidingMenu(convertView,
+			                 position);
+		}else if (mHolder.mSlideOpenToggle.getVisibility() != View.INVISIBLE){
+				mHolder.mSlideOpenToggle.setVisibility(View.INVISIBLE);
+		}
 
 		return convertView;
 	}
 
 
 	public void
-		enableSlidingMenu(OnSlidingMenuItemClickListener mActionListener,
-							int slideToggleId,
-							int slidingLayoutId,
-							int... slidingViewButtonIds){
+	    enableSlidingMenu(OnSlidingMenuItemClickListener mActionListener,
+	                      int slideToggleId,
+	                      int slidingLayoutId,
+	                      int... slidingViewButtonIds){
 
 		isSlidingEnabled = true;
 
-		this.mActionListener = mActionListener;
+		this.mMenuItemClickListener = mActionListener;
 		this.slideToggleId = slideToggleId;
 		this.slidingViewId = slidingLayoutId;
 		this.slidingViewButtonIds = slidingViewButtonIds;
-
-
 	}
 
 
 	public void
-		enableSlidingMenu(OnSlidingMenuItemClickListener mActionListener,
-							int... slidingViewButtonIds){
+	    enableSlidingMenu(OnSlidingMenuItemClickListener mActionListener,
+	                      int... slidingViewButtonIds){
 
-		enableSlidingMenu(	mActionListener,
-							R.id.slide_toggle_button,
-							R.id.sliding_view_id,
-							slidingViewButtonIds);
+		enableSlidingMenu(mActionListener,
+		                  R.id.slide_toggle_button,
+		                  R.id.sliding_view_id,
+		                  slidingViewButtonIds);
 	}
 
 
@@ -177,7 +203,7 @@ public abstract class BaseBoostAdapter	extends
 	 * 
 	 * @see #getExpandableView(View)
 	 * @param parent
-	 *            the list view item
+	 *        the list view item
 	 * @ensure return!=null
 	 * @return a child of parent which is a button
 	 */
@@ -199,7 +225,7 @@ public abstract class BaseBoostAdapter	extends
 	 * 
 	 * @see #getExpandToggleButton(View)
 	 * @param parent
-	 *            the list view item
+	 *        the list view item
 	 * @ensure return!=null
 	 * @return a child of parent which is a view (or often ViewGroup) that can
 	 *         be collapsed and expanded
@@ -218,7 +244,7 @@ public abstract class BaseBoostAdapter	extends
 	 */
 	protected int getAnimationDuration(){
 
-		return 330;
+		return 250;
 	}
 
 
@@ -227,57 +253,54 @@ public abstract class BaseBoostAdapter	extends
 		View more = getExpandToggleButton(convertView);
 		View itemToolbar = getExpandableView(convertView);
 		itemToolbar.measure(parent.getWidth(),
-							parent.getHeight());
+		                    parent.getHeight());
 
-		setupSlidingMenu(	more,
-							itemToolbar,
-							position);
+		setupSlidingMenu(more,
+		                 itemToolbar,
+		                 position);
 
 		// add the action listeners
-		if (slidingViewButtonIds != null
-			&& convertView != null)
+		if (slidingViewButtonIds != null && convertView != null)
 			for (int id : slidingViewButtonIds){
 				View buttonView = convertView.findViewById(id);
 				if (buttonView != null)
 					buttonView.findViewById(id)
-								.setOnClickListener(new OnClickListener(){
+					          .setOnClickListener(new OnClickListener(){
 
-									@Override
-									public void
-										onClick(View view){
+						          @Override
+						          public void onClick(View view){
 
-										if (mActionListener != null)
-											mActionListener.onSlideItemClick(	convertView,
-																				view,
-																				position);
-									}
-								});
+							          if (mMenuItemClickListener != null)
+								          mMenuItemClickListener.onSlideItemClick(convertView,
+								                                                  view,
+								                                                  position);
+						          }
+					          });
 			}
 	}
 
 
-	private void setupSlidingMenu(final View button,
-									final View target,
-									final int position){
+	protected void setupSlidingMenu(final View button,
+	                              final View target,
+	                              final int position){
 
-		if (target == lastOpen
-			&& position != lastOpenPosition)
+		if (target == lastOpen && position != lastOpenPosition)
 			// lastOpen is recycled, so its reference is false
 			lastOpen = null;
 		if (position == lastOpenPosition)
 			// re reference to the last view
 			// so when can animate it when collapsed
 			lastOpen = target;
-		int height = viewHeights.get(	position,
-										-1);
+		int height = viewHeights.get(position,
+		                             -1);
 		if (height == -1){
 			viewHeights.put(position,
-							target.getMeasuredHeight());
-			updateExpandable(	target,
-								position);
+			                target.getMeasuredHeight());
+			updateExpandable(target,
+			                 position);
 		}else
-			updateExpandable(	target,
-								position);
+			updateExpandable(target,
+			                 position);
 
 		button.setOnClickListener(new View.OnClickListener(){
 
@@ -287,26 +310,25 @@ public abstract class BaseBoostAdapter	extends
 				view.setAnimation(null);
 				// check wether we need to expand or collapse
 				int type =
-							target.getVisibility() == View.VISIBLE
-																	? ExpandCollapseAnimation.COLLAPSE
-																	: ExpandCollapseAnimation.EXPAND;
+				           target.getVisibility() == View.VISIBLE
+				                                                 ? ExpandCollapseAnimation.COLLAPSE
+				                                                 : ExpandCollapseAnimation.EXPAND;
 
 				// remember the state
 				if (type == ExpandCollapseAnimation.EXPAND)
-					openItems.set(	position,
-									true);
+					openItems.set(position,
+					              true);
 				else
-					openItems.set(	position,
-									false);
+					openItems.set(position,
+					              false);
 				// check if we need to collapse a different view
 				if (type == ExpandCollapseAnimation.EXPAND){
-					if (lastOpenPosition != -1
-						&& lastOpenPosition != position){
+					if (lastOpenPosition != -1 && lastOpenPosition != position){
 						if (lastOpen != null)
 							animateView(lastOpen,
-										ExpandCollapseAnimation.COLLAPSE);
-						openItems.set(	lastOpenPosition,
-										false);
+							            ExpandCollapseAnimation.COLLAPSE);
+						openItems.set(lastOpenPosition,
+						              false);
 					}
 					lastOpen = target;
 					lastOpenPosition = position;
@@ -314,16 +336,16 @@ public abstract class BaseBoostAdapter	extends
 					lastOpenPosition = -1;
 
 				animateView(target,
-							type);
+				            type);
 			}
 		});
 	}
 
 
-	private void updateExpandable(View target, int position){
+	protected void updateExpandable(View target, int position){
 
 		final LinearLayout.LayoutParams params =
-													(LinearLayout.LayoutParams) target.getLayoutParams();
+		                                         (LinearLayout.LayoutParams) target.getLayoutParams();
 		if (openItems.get(position)){
 			target.setVisibility(View.VISIBLE);
 			params.bottomMargin = 0;
@@ -338,18 +360,16 @@ public abstract class BaseBoostAdapter	extends
 	 * Performs either COLLAPSE or EXPAND animation on the target view
 	 * 
 	 * @param target
-	 *            the view to animate
+	 *        the view to animate
 	 * @param type
-	 *            the animation type, either ExpandCollapseAnimation.COLLAPSE or
-	 *            ExpandCollapseAnimation.EXPAND
+	 *        the animation type, either ExpandCollapseAnimation.COLLAPSE or
+	 *        ExpandCollapseAnimation.EXPAND
 	 */
-	private void animateView(final View target, final int type){
+	protected void animateView(final View target, final int type){
 
 
-		Animation anim = new ExpandCollapseAnimation(
-														target,
-														type
-							);
+		Animation anim = new ExpandCollapseAnimation(target,
+		                                             type);
 		anim.setDuration(getAnimationDuration());
 		anim.setAnimationListener(new AnimationListener(){
 
@@ -378,10 +398,10 @@ public abstract class BaseBoostAdapter	extends
 						listView.getGlobalVisibleRect(r2);
 						if (!visible)
 							listView.smoothScrollBy(movement,
-													1000);
+							                        1000);
 						else if (r2.bottom == r.bottom)
 							listView.smoothScrollBy(movement,
-													1000);
+							                        1000);
 					}
 
 			}
@@ -403,9 +423,9 @@ public abstract class BaseBoostAdapter	extends
 			// if visible animate it out
 			if (lastOpen != null)
 				animateView(lastOpen,
-							ExpandCollapseAnimation.COLLAPSE);
-			openItems.set(	lastOpenPosition,
-							false);
+				            ExpandCollapseAnimation.COLLAPSE);
+			openItems.set(lastOpenPosition,
+			              false);
 			lastOpenPosition = -1;
 			return true;
 		}
@@ -448,8 +468,7 @@ public abstract class BaseBoostAdapter	extends
 
 		int nextSetBit = -1;
 
-		if (dest != null
-			&& set != null)
+		if (dest != null && set != null)
 			dest.writeInt(set.cardinality());
 
 		while ((nextSetBit = set.nextSetBit(nextSetBit + 1)) != -1)
@@ -459,10 +478,9 @@ public abstract class BaseBoostAdapter	extends
 	/**
 	 * The actual state class
 	 */
-	static class SavedState	extends
-							View.BaseSavedState{
+	static class SavedState extends View.BaseSavedState{
 
-		public BitSet	openItems			= null;
+		public BitSet	openItems		 = null;
 		public int		lastOpenPosition	= -1;
 
 
@@ -477,7 +495,7 @@ public abstract class BaseBoostAdapter	extends
 			super(in);
 			in.writeInt(lastOpenPosition);
 			writeBitSet(in,
-						openItems);
+			            openItems);
 		}
 
 
@@ -485,30 +503,30 @@ public abstract class BaseBoostAdapter	extends
 		public void writeToParcel(Parcel out, int flags){
 
 			super.writeToParcel(out,
-								flags);
+			                    flags);
 			lastOpenPosition = out.readInt();
 			openItems = readBitSet(out);
 		}
 
 		// required field that makes Parcelables from a Parcel
 		public static final Parcelable.Creator<SavedState>	CREATOR	=
-																		new Parcelable.Creator<SavedState>(){
+		                                                              new Parcelable.Creator<SavedState>(){
 
-																			@Override
-																			public SavedState
-																				createFromParcel(Parcel in){
+			                                                              @Override
+			                                                              public SavedState
+			                                                                  createFromParcel(Parcel in){
 
-																				return new SavedState(in);
-																			}
+				                                                              return new SavedState(in);
+			                                                              }
 
 
-																			@Override
-																			public SavedState[]
-																				newArray(int size){
+			                                                              @Override
+			                                                              public SavedState[]
+			                                                                  newArray(int size){
 
-																				return new SavedState[size];
-																			}
-																		};
+				                                                              return new SavedState[size];
+			                                                              }
+		                                                              };
 	}
 
 

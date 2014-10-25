@@ -13,7 +13,5 @@ public class BoostAdapter	extends
 	public BoostAdapter(BaseAdapter wrapped){
 
 		super(wrapped);
-
 	}
-
 }

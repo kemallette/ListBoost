@@ -16,11 +16,6 @@
     <!-- List Types -->
     <string name="listview">ListView</string>
     <string name="expandablelistview">ExpandableListView</string>
-    <string name="list_type">List Type</string>
-
-    <!-- Other -->
-    <string name="demo_list_creator">Demo List Creator</string>
-    <string name="start_demo">Start Demo</string>
 
     <!-- MultiChoice -->
     <string name="choice_mode_options">Choice Mode Options</string>
@@ -55,7 +50,7 @@
     <string name="one_per_group">One Per Group</string>
     <string name="floating_action_button_fab">Floating Action Button (FAB)</string>
     <string name="fab_list_scrolling_movement_heading">FAB List Scrolling Movement</string>
-    <string name="hide_on_down_scroll_show_on_up_scroll">Hide on down scroll, show on up scroll</string>
+    <string name="hide_on_down_scroll_show_on_up_scroll">Show/Hide fab on list scroll</string>
     <string name="vertical">Vertical</string>
     <string name="horizontal">Horizontal</string>
     <string name="fab_menus_heading">FAB Menu Open Direction</string>
@@ -74,5 +69,7 @@
     <string name="boostlistview">BoostListView</string>
     <string name="boostexpandablelistview">BoostExpandableListView</string>
     <string name="check_children_on_group_check">Check children on group check</string>
+    <string name="enable_fab_menu">Enable FAB Menu</string>
+    <string name="choice_modes">Choice Modes</string>
 
 </resources>

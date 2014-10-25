@@ -65,6 +65,7 @@
         <!-- Group Item ChoiceModes Heading -->
 
         <TextView
+            android:id="@+id/group_choice_options_heading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -89,6 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"
+                android:checked="true"
                 android:text="@string/multi" />
 
             <RadioButton
@@ -101,13 +103,13 @@
                 android:id="@+id/group_no_choice_radio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
                 android:text="@string/none" />
         </RadioGroup>
 
         <!-- Child Item ChoiceModes Heading -->
 
         <TextView
+            android:id="@+id/child_choice_options_heading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -132,6 +134,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"
+                android:checked="true"
                 android:text="@string/multi" />
 
             <RadioButton
@@ -150,7 +153,6 @@
                 android:id="@+id/child_no_choice_radio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
                 android:text="@string/none" />
         </RadioGroup>
 
@@ -211,12 +213,21 @@
             android:layout_marginBottom="10dp" />
 
         <CheckBox
-            android:id="@+id/move_fab_on_scroll_toggle"
+            android:id="@+id/fab_scroll_mode_toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="10dp"
             android:text="@string/hide_on_down_scroll_show_on_up_scroll" />
+
+        <CheckBox
+            android:id="@+id/toggle_fab_menus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:text="@string/enable_fab_menu"
+            android:visibility="invisible" />
 
         <!-- Expanding FAB Menu Heading -->
 
@@ -227,7 +238,8 @@
             android:padding="10dp"
             android:text="@string/fab_menus_heading"
             android:textSize="18sp"
-            android:typeface="sans" />
+            android:typeface="sans"
+            android:visibility="invisible" />
 
         <!-- Fab Menu Direction Radios -->
 
@@ -237,7 +249,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="5dp"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:visibility="invisible" >
 
             <RadioButton
                 android:id="@+id/fab_menu_vertical_radio"
@@ -245,13 +258,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"
                 android:checked="true"
-                android:text="@string/vertical" />
+                android:text="@string/vertical"
+                android:visibility="invisible" />
 
             <RadioButton
                 android:id="@+id/fab_menu_horizontal_radio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/horizontal" />
+                android:text="@string/horizontal"
+                android:visibility="invisible" />
         </RadioGroup>
 
         <!-- FAB Menu Item Count -->

@@ -17,21 +17,39 @@ import com.kemallette.ListBoost.List.BoostAdapter;
 import com.kemallette.ListBoost.List.BoostListView;
 import com.kemallette.ListBoost.List.OnSlidingMenuItemClickListener;
 import com.kemallette.ListBoostDemo.R;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.ChildItemMenusToggleEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.EnableFabMenuToggleEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.EnableFabToggleEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.EnableMultiChoiceToggleEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.EnableSlidingItemMenuToggleEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.FabMenuDirectionChangeEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.FabScrollModeToggleEvent;
+import com.kemallette.ListBoostDemo.Activity.MainActivity.GroupItemMenusToggleEvent;
 import com.kemallette.ListBoostDemo.Activity.MainActivity.ListChoiceModeChangeEvent;
-import com.kemallette.ListBoostDemo.Activity.MainActivity.MultiChoiceToggleEvent;
+import com.kemallette.ListBoostDemo.Fab.FloatingActionButton;
+import com.kemallette.ListBoostDemo.Model.WorldCity;
+import com.kemallette.ListBoostDemo.Util.SeedDataUtil;
 
 import de.greenrobot.event.EventBus;
 
 
 public class BoostListFragment extends Fragment implements OnSlidingMenuItemClickListener{
 
-	private final int[]	  mSlidingViewButtonIds	= new int[] { R.id.b1, R.id.b2,
-	R.id.b3, R.id.b4	                        };
+	private final int[]	         mSlidingViewButtonIds	= new int[] { R.id.b1,
+	R.id.b2, R.id.b3, R.id.b4, R.id.b5, R.id.b6	   };
 
-	private int	          choiceMode;
 
-	private BoostListView	mList;
-	private BoostAdapter	mAdapter;
+	private boolean	             fabScrollingEnabled	= false,
+	    fabMenuEnabled = false, fabEnabled = false;
+
+	private boolean	             slidingMenusEnabled	= false;
+
+	private int	                 choiceMode;
+
+	private FloatingActionButton	mFab;
+
+	private BoostListView	     mList;
+	private BoostAdapter	     mAdapter;
 
 
 	public BoostListFragment(){
@@ -51,8 +69,8 @@ public class BoostListFragment extends Fragment implements OnSlidingMenuItemClic
 
 		super.onCreate(savedInstanceState);
 
-		EventBus.getDefault()
-		        .register(this);
+		if(!EventBus.getDefault().isRegistered(this))
+			EventBus.getDefault().register(this);
 	}
 
 
@@ -78,6 +96,32 @@ public class BoostListFragment extends Fragment implements OnSlidingMenuItemClic
 	}
 
 
+	private void init(){
+
+		mFab = (FloatingActionButton) getView().findViewById(R.id.fab);
+		mList = (BoostListView) getView().findViewById(R.id.list);
+
+		WorldCity[] data = SeedDataUtil.getCities(getActivity(),
+		                                          35);
+
+		mAdapter =
+		           new BoostDemoAdapter(new ArrayAdapter<WorldCity>(getActivity(),
+		                                                            R.layout.combined_list_item,
+		                                                            android.R.id.text1,
+		                                                            data));
+
+		mList.setAdapter(mAdapter);
+
+		if (slidingMenusEnabled){
+			mList.enableSlidingMenus(this,
+			                         R.id.slide_toggle_button,
+			                         R.id.sliding_view_id,
+			                         mSlidingViewButtonIds);
+		}
+
+	}
+
+
 	@Override
 	public void onSlideItemClick(final View itemView,
 	                             final View clickedView,
@@ -90,37 +134,18 @@ public class BoostListFragment extends Fragment implements OnSlidingMenuItemClic
 	}
 
 
-	private void init(){
-
-		mList = (BoostListView) getView().findViewById(R.id.list);
-
-		String[] data = new String[] { "first", "second", "third", "fourth" };
-
-		mAdapter =
-		           new BoostDemoAdapter(new ArrayAdapter<String>(getActivity(),
-		                                                         R.layout.combined_list_item,
-		                                                         android.R.id.text1,
-		                                                         data));
-
-		mList.setAdapter(mAdapter);
-
-		if (getArguments() != null && !getArguments().isEmpty()){
-
-			// int listFeature =
-			// getArguments().getInt(ActivityUtil.LIST_FEATURE);
-
-
-		}
-
-	}
-
-
 	/***********************************************************
 	 * 
 	 * EventBus event listeners
 	 * 
 	 ************************************************************/
-	public void onEvent(MultiChoiceToggleEvent event){
+
+	/******************************************
+	 * MultiChoice Events
+	 *****************************************/
+
+	// Enable/Disable MultiChoice
+	public void onEvent(EnableMultiChoiceToggleEvent event){
 
 		if (event.toggled){ // Enable MultiChoice
 			mList.setChoiceMode(choiceMode);
@@ -136,53 +161,93 @@ public class BoostListFragment extends Fragment implements OnSlidingMenuItemClic
 			mList.setChoiceMode(event.choiceMode);
 	}
 
-	private class BoostDemoAdapter extends BoostAdapter{
 
-		private class Holder{
+	/******************************************
+	 * Sliding Item Menu Events
+	 *****************************************/
+	public void onEvent(EnableSlidingItemMenuToggleEvent event){
 
-			CheckBox	mBox;
-			Button		mSlideToggle;
-			TextView	mText;
+		slidingMenusEnabled = event.toggled;
+
+		if (slidingMenusEnabled){
+			mList.enableSlidingMenus(this,
+			                         R.id.slide_toggle_button,
+			                         R.id.sliding_view_id,
+			                         mSlidingViewButtonIds);
+		}else{
+			mList.disableSlidingMenus();
 		}
+	}
 
-		private Holder	mHolder;
 
+	public void onEvent(GroupItemMenusToggleEvent event){
+
+		// TODO
+	}
+
+
+	public void onEvent(ChildItemMenusToggleEvent event){
+
+		// TODO
+	}
+
+
+	/******************************************
+	 * FAB Events
+	 *****************************************/
+
+	public void onEvent(EnableFabToggleEvent event){
+
+		fabEnabled = event.toggled;
+
+		if (fabEnabled){
+			mFab.setVisibility(View.VISIBLE);
+			if (fabScrollingEnabled){
+				mFab.respondTo(mList);
+			}else{
+				mFab.disableScrolling();
+			}
+			// TODO: Blocked by fab menu implementation: if(fabMenuEnabled) mFab.enableMenu();
+		}else{
+			mFab.setVisibility(View.INVISIBLE);
+			fabEnabled = false;
+		}
+	}
+
+
+	public void onEvent(EnableFabMenuToggleEvent event){
+
+		fabMenuEnabled = event.toggled;
+		// TODO: Blocked by fab menu implementation
+	}
+
+
+	public void onEvent(FabScrollModeToggleEvent event){
+
+		if (fabScrollingEnabled != event.toggled)
+			fabScrollingEnabled = event.toggled;
+
+		if (fabScrollingEnabled){
+			mFab.respondTo(mList);
+		}else{
+			mFab.disableScrolling();
+		}
+	}
+
+
+	public void onEvent(FabMenuDirectionChangeEvent event){
+
+		// TODO: Blocked by FAB menu implementation
+	}
+
+
+	private class BoostDemoAdapter extends BoostAdapter{
 
 		public BoostDemoAdapter(final BaseAdapter wrapped){
 
 			super(wrapped);
 		}
-
-
-		@Override
-		public View getView(final int position,
-		                    View convertView,
-		                    final ViewGroup viewGroup){
-
-			convertView = super.getView(position,
-			                            convertView,
-			                            viewGroup);
-
-			if (convertView != null){
-
-				mHolder = (Holder) convertView.getTag();
-				if (mHolder == null){
-
-					mHolder = new Holder();
-
-					mHolder.mBox =
-					               (CheckBox) convertView.findViewById(android.R.id.checkbox);
-					mHolder.mSlideToggle =
-					                       (Button) convertView.findViewById(R.id.slide_toggle_button);
-					mHolder.mText =
-					                (TextView) convertView.findViewById(android.R.id.text1);
-				}
-
-				mHolder.mText.setText(getItem(position).toString());
-
-			}
-			return convertView;
-		}
+		
 	}
 
 }
