@@ -5,13 +5,13 @@ ListView and ExpandableListView are quite powerful and fundamental to most apps.
 Major Features Roadmap
 ----
 
-####ExpandableListView
+#### ExpandableListView
   - Sliding list item menus
   - Swipe-to-reveal menus
   - Drag and Drop
   - MultiChoice Modes
 
-####ListView
+#### ListView
   - Sliding list item menus
   - Swipe-to-reveal menus
   - Drag and Drop
@@ -21,21 +21,21 @@ Major Features Roadmap
 ChangeLog
 ---
 
-####ListBoost v0.2.0
+#### ListBoost v0.2.0
   - MultiChoice functionality for BoostExpandableListView added
     TODO: saveInstanceState isn't implemented yet and checkChildrenWithGroup hasn't been tested yet
   - Demo project is functional for BoostExpandableListView (only choice mode functionality is available)
 
-####ListBoost v0.1.0
+#### ListBoost v0.1.0
   - ListView sliding list item menus is working for both cursor and non-cursor adapters.
   - ExpandableList multiSelect mode is mostly scaffolded out.
 
 ****
 
-###Pull Requests and Contributing
+### Pull Requests and Contributing
 Feel free to create pull requests if you'd like to contribute or if you'd like to get more involved with ListBoost, shoot me an e-mail at kemallette@gmail.com.
 
-###Acknowledgments and Thanks
+### Acknowledgments and Thanks
 
   * Rocket by Chris Kerr from [The Noun Project](http://thenounproject.com/)
 
@@ -44,10 +44,10 @@ project, [Android-SlideExpandableListView][slide]
   * Some ListView Drag and drop functionality originally from [Bauerca's][dragdrop_author] project, [drag-sort-listview][dragdrop] (**no longer maintained**)
   * Some ListView swipe to reveal functionality originally from [47deg's][47] project, [android-swipelistview][swipe]
 
-###License
+### License
 
 ```
-Copyright 2014 Kyle Mallette
+Copyright 2017 Kyle Mallette
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
